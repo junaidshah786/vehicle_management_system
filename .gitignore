@@ -1,0 +1,5 @@
+myenv
+memo.txt
+__pycache__
+*.pyc
+text.ipynb
