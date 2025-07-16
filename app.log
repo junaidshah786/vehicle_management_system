@@ -12,3 +12,4 @@ AttributeError: 'LoginRequest' object has no attribute 'email'
 KeyError: 'passwordHash'
 
 2025-07-12 19:36:46,500 - INFO - Login attempt for admin123
+2025-07-16 11:32:11,455 - INFO - Login attempt for admin123
