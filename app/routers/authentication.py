@@ -40,10 +40,10 @@ async def user_login(login_details: LoginRequest):
         username = user_data.get("name", "Unknown User")
         role = user_data.get("role", "user")
 
-        return {"access_token": access_token, 
+        return {"accessToken": access_token, 
                 "username": username,
                 "role": role,
-                "token_type": "bearer",
+                "tokenType": "bearer",
                 "message": "Login successful"}
     except Exception as e:
         logging.error(f"Error during admin login: {traceback.format_exc()}")
