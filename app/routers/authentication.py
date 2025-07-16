@@ -2,8 +2,6 @@ import logging
 import traceback
 from fastapi import FastAPI, HTTPException, APIRouter
 from pydantic import BaseModel
-# from passlib.context import CryptContext
-from firebase_admin import credentials, firestore, initialize_app
 from ..services.login import create_access_token
 
 app = FastAPI()
