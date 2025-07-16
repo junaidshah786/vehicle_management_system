@@ -37,8 +37,12 @@ async def user_login(login_details: LoginRequest):
 
         # Create JWT token without expiry
         access_token = create_access_token(data={"sub": login_details.username})
+        username = user_data.get("name", "Unknown User")
+        role = user_data.get("role", "user")
 
         return {"access_token": access_token, 
+                "username": username,
+                "role": role,
                 "token_type": "bearer",
                 "message": "Login successful"}
     except Exception as e:
