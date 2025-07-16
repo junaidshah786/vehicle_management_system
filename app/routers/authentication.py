@@ -9,9 +9,8 @@ from ..services.login import create_access_token
 app = FastAPI()
 router = APIRouter()
 
-cred = credentials.Certificate("./vehiclemanagementsystem-e76c4-firebase-adminsdk-fbsvc-db53f875ef.json")
-initialize_app(cred)
-db = firestore.client()
+from app.routers.firebase import db
+
 
 
 class LoginRequest(BaseModel):

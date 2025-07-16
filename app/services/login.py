@@ -1,9 +1,9 @@
 from jose import jwt
-
+from app.config.config import SECRET_KEY, ALGORITHM
 
 # JWT setup
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
+SECRET_KEY = SECRET_KEY
+ALGORITHM = ALGORITHM
 
 
 # Utility function to create access token without expiry

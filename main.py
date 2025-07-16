@@ -3,7 +3,7 @@ logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s 
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import authentication
+from app.routers import authentication, vehicle_crud
 
 app = FastAPI()
 
@@ -14,8 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(authentication.router, prefix="/v1/login", tags=["Authentication"])
-
+app.include_router(authentication.router, prefix="/v1", tags=["Authentication"])
+app.include_router(vehicle_crud.router, prefix="/v1", tags=[" Vehicles"])
 
 
 
