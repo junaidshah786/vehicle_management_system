@@ -1,19 +1,15 @@
 import logging
 import traceback
 from fastapi import FastAPI, HTTPException, APIRouter
-from pydantic import BaseModel
+
 from ..services.login import create_access_token
+from app.services.pydantic import LoginRequest
+from app.routers.firebase import db
 
 app = FastAPI()
 router = APIRouter()
 
-from app.routers.firebase import db
 
-
-
-class LoginRequest(BaseModel):
-    username: str
-    passwordHash: str
 
 # Admin login endpoint
 @router.post("/login", tags=["Authentication"])

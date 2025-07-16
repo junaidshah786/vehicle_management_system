@@ -2,43 +2,16 @@ import logging
 import traceback
 from fastapi import FastAPI, HTTPException, APIRouter, Path
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field
-from typing import Optional
 from datetime import datetime, timezone
-
+from app.routers.firebase import db
 from app.routers.firestore_utils import delete_vehicle, fetch_registered_vehicle_summary, fetch_vehicle_data, update_vehicle
 from app.services.pdf_generator import generate_vehicle_icard_pdf
-from firebase_admin import firestore
+from app.services.pydantic import VehicleRegistration, VehicleUpdateRequest
 
 app = FastAPI()
 router = APIRouter()
 
-# cred = credentials.Certificate("./vehiclemanagementsystem-e76c4-firebase-adminsdk-fbsvc-db53f875ef.json")
-# initialize_app(cred)
-db = firestore.client()
-from pydantic import BaseModel, Field
-from enum import Enum
-
-# Enum for vehicle types
-class VehicleTypeEnum(str, Enum):
-    innova = "innova"
-    tavera = "tavera"
-    sumo = "sumo"
-    xylo = "xylo"
-    scorpio = "scorpio"
-    bolero = "bolero"
-    other = "other"
-
-# Simplified model with inline constraints
-class VehicleRegistration(BaseModel):
-    registrationNumber: str = Field(..., min_length=6, max_length=15, description="e.g., JK01AB1234")
-    vehicleType: VehicleTypeEnum
-    ownerName: str = Field(..., min_length=3, max_length=50)
-    ownerPhone: str = Field(..., pattern=r"^\+91-\d{10}$")
-    seatingCapacity: int = Field(..., gt=0, lt=100)
-    status: str = Field(default="active", pattern="^(active|inactive)$")
-
-
+# 1. Vehicle Registration API
 @router.get("/fetch-vehicles", summary="Fetch all registered vehicles (summary)")
 async def get_registered_vehicles():
     try:
@@ -47,7 +20,7 @@ async def get_registered_vehicles():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching vehicles: {e}")
     
-    
+# 2. Vehicle Registration API
 @router.post("/vehicles")
 def register_vehicle(data: VehicleRegistration):
     try:
@@ -70,7 +43,7 @@ def register_vehicle(data: VehicleRegistration):
         logging.error(f"Error registering vehicle: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
+# 3. Download Vehicle I-Card API
 @router.get("/download-icard/{vehicle_id}")
 def download_icard(vehicle_id: str):
     vehicle = fetch_vehicle_data(vehicle_id)
@@ -80,20 +53,7 @@ def download_icard(vehicle_id: str):
         "Content-Disposition": f"attachment; filename=vehicle_icard_{vehicle_id}.pdf"
     })
 
-class VehicleStatus(str, Enum):
-    active = "active"
-    inactive = "inactive"
-
-# 2. Update Request Body with validation
-class VehicleUpdateRequest(BaseModel):
-    ownerName: Optional[str] = None
-    registrationNumber: Optional[str] = None
-    vehicleType: Optional[str] = None
-    status: Optional[VehicleStatus] = None  # Only active/inactive allowed
-    seatingCapacity: Optional[int] = None
-    ownerPhone: Optional[str] = None
-
-# 3. Update Vehicle API
+# 4. Update Vehicle API
 @router.put("/vehicles/{vehicle_id}", summary="Edit a registered vehicle")
 async def edit_vehicle(
     vehicle_id: str = Path(..., description="Firestore document ID"),
@@ -108,7 +68,7 @@ async def edit_vehicle(
 
     return {"status": "success", "message": "Vehicle updated successfully"}
 
-
+# 5. Delete Vehicle API
 @router.delete("/vehicles/{vehicle_id}", summary="Delete a registered vehicle")
 async def remove_vehicle(vehicle_id: str = Path(..., description="Firestore document ID")):
     success = delete_vehicle(vehicle_id)
