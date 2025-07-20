@@ -1,0 +1,82 @@
+2025-07-17 13:10:37,261 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 44, in verify_and_add_to_queue
+    for doc in results:
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\grpc_helpers.py", line 174, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.FailedPrecondition: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+
+2025-07-17 13:14:52,729 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 44, in verify_and_add_to_queue
+    for doc in results:
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\grpc_helpers.py", line 174, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.FailedPrecondition: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+
+2025-07-17 13:24:30,721 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 44, in verify_and_add_to_queue
+    for doc in results:
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\stream_generator.py", line 58, in __next__
+    return self._generator.__next__()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 410, in _make_stream
+    response_iterator, expected_prefix = self._get_stream_iterator(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\query.py", line 260, in _get_stream_iterator
+    response_iterator = self._client._firestore_api.run_query(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\services\firestore\client.py", line 1624, in run_query
+    response = rpc(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\grpc_helpers.py", line 174, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.FailedPrecondition: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+
+2025-07-17 22:36:46,518 - INFO - Login attempt for admin123

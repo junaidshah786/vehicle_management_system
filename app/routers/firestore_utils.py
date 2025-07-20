@@ -3,10 +3,15 @@ from fastapi import HTTPException
 from app.config.config import vehicle_collection_name
 
 from google.cloud import firestore
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
-def fetch_registered_vehicle_summary() -> List[Dict]:
+def fetch_registered_vehicle_summary(
+    vehicleType: Optional[str] = None,
+    seatingCapacity: Optional[int] = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None
+) -> List[Dict]:
     vehicles_ref = db.collection(vehicle_collection_name)
     docs = vehicles_ref.stream()
 
@@ -14,14 +19,39 @@ def fetch_registered_vehicle_summary() -> List[Dict]:
     for doc in docs:
         data = doc.to_dict()
         summary = {
+            "_id": data.get("_id", doc.id),
+            "createdAt": data.get("createdAt"),
+            "updatedAt": data.get("updatedAt"),
             "ownerName": data.get("ownerName"),
+            "ownerPhone": data.get("ownerPhone"),
+            "seatingCapacity": data.get("seatingCapacity"),
             "registrationNumber": data.get("registrationNumber"),
             "vehicleType": data.get("vehicleType"),
             "status": data.get("status")
         }
+
+        # Apply filters
+        if vehicleType and summary["vehicleType"] != vehicleType:
+            continue
+        if seatingCapacity and summary["seatingCapacity"] != seatingCapacity:
+            continue
+        if status and summary["status"] != status:
+            continue
+
+        # Apply search (case-insensitive)
+        if search:
+            search_lower = search.lower()
+            if not (
+                (summary["ownerName"] and search_lower in summary["ownerName"].lower()) or
+                (summary["registrationNumber"] and search_lower in summary["registrationNumber"].lower()) or
+                (summary["ownerPhone"] and search_lower in str(summary["ownerPhone"]))
+            ):
+                continue
+
         summary_list.append(summary)
 
     return summary_list
+
 
 
 def fetch_vehicle_data(vehicle_id: str):

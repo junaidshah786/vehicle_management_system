@@ -7,19 +7,45 @@ from app.routers.firebase import db
 from app.routers.firestore_utils import delete_vehicle, fetch_registered_vehicle_summary, fetch_vehicle_data, update_vehicle
 from app.services.pdf_generator import generate_vehicle_icard_pdf
 from app.services.pydantic import VehicleRegistration, VehicleUpdateRequest
+from fastapi import Query
+from typing import Optional
 
 app = FastAPI()
 router = APIRouter()
 
-# 1. Vehicle Registration API
-@router.get("/fetch-vehicles", summary="Fetch all registered vehicles (summary)")
-async def get_registered_vehicles():
+
+@router.get("/fetch-vehicles", summary="Fetch all registered vehicles with pagination, filter, and search")
+async def get_registered_vehicles(
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(10, ge=1, le=100, description="Items per page"),
+    vehicleType: Optional[str] = Query(None),
+    seatingCapacity: Optional[int] = Query(None),
+    status: Optional[str] = Query(None),
+    search: Optional[str] = Query(None, description="Search by ownerName, registrationNumber, or phone")
+):
     try:
-        vehicles = fetch_registered_vehicle_summary()
-        return {"status": "success", "count": len(vehicles), "data": vehicles}
+        vehicles = fetch_registered_vehicle_summary(
+            vehicleType=vehicleType,
+            seatingCapacity=seatingCapacity,
+            status=status,
+            search=search
+        )
+
+        # Pagination
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_data = vehicles[start:end]
+
+        return {
+            "status": "success",
+            "page": page,
+            "limit": limit,
+            "total": len(vehicles),
+            "data": paginated_data
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching vehicles: {e}")
-    
+
 # 2. Vehicle Registration API
 @router.post("/vehicles")
 def register_vehicle(data: VehicleRegistration):

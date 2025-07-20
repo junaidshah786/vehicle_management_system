@@ -45,3 +45,10 @@ class VehicleUpdateRequest(BaseModel):
     status: Optional[VehicleStatus] = None  # Only active/inactive allowed
     seatingCapacity: Optional[int] = None
     ownerPhone: Optional[str] = None
+
+
+######## queue check in##########
+
+class QRRequest(BaseModel):
+    qr_data: str
+    username: str
