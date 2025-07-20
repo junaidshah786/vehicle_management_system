@@ -46,17 +46,27 @@ async def get_registered_vehicles(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching vehicles: {e}")
 
-# 2. Vehicle Registration API
+# 1. Vehicle Registration API
 @router.post("/vehicles")
 def register_vehicle(data: VehicleRegistration):
     try:
         vehicle_data = data.dict()
         now = datetime.utcnow().isoformat() + "Z"
 
-        # Assign a Firestore document ID (e.g., auto-generated or reg no)
+        # Check if a vehicle with the same registrationNumber already exists
+        existing_query = (
+            db.collection("vehicleDetails")
+            .where("registrationNumber", "==", vehicle_data["registrationNumber"])
+            .limit(1)
+            .stream()
+        )
+        if any(existing_query):
+            raise HTTPException(status_code=400, detail="Vehicle with this registration number already exists")
+
+        # Assign Firestore document ID
         doc_ref = db.collection("vehicleDetails").document()
 
-        # Prepare data with metadata
+        # Add metadata
         vehicle_data.update({
             "_id": doc_ref.id,
             "createdAt": now,
@@ -65,9 +75,13 @@ def register_vehicle(data: VehicleRegistration):
 
         doc_ref.set(vehicle_data)
         return {"message": "Vehicle registered successfully", "vehicleId": doc_ref.id}
+
+    except HTTPException:
+        raise  # re-raise HTTP errors as-is
     except Exception as e:
         logging.error(f"Error registering vehicle: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 
 # 3. Download Vehicle I-Card API
 @router.get("/download-icard/{vehicle_id}")

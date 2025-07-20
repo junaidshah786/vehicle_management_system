@@ -26,7 +26,7 @@ class VehicleRegistration(BaseModel):
     registrationNumber: str = Field(..., min_length=6, max_length=15, description="e.g., JK01AB1234")
     vehicleType: VehicleTypeEnum
     ownerName: str = Field(..., min_length=3, max_length=50)
-    ownerPhone: str = Field(..., pattern=r"^\+91-\d{10}$")
+    ownerPhone: str = Field(..., pattern=r"^\d{10}$")
     seatingCapacity: int = Field(..., gt=0, lt=100)
     status: str = Field(default="active", pattern="^(active|inactive)$")
 

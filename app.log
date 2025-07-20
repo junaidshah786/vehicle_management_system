@@ -80,3 +80,4 @@ google.api_core.exceptions.FailedPrecondition: 400 The query requires an index. 
 google.api_core.exceptions.FailedPrecondition: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
 
 2025-07-17 22:36:46,518 - INFO - Login attempt for admin123
+2025-07-20 14:54:30,248 - INFO - Login attempt for admin123
