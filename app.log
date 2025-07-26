@@ -16,3 +16,25 @@ fastapi.exceptions.HTTPException: 404: Vehicle not found
     raise HTTPException(status_code=403, detail="Registration number mismatch")
 fastapi.exceptions.HTTPException: 403: Registration number mismatch
 
+2025-07-26 12:46:30,927 - ERROR - Registration number mismatch: expected jk0af5936, got jk01af4936
+2025-07-26 12:46:30,927 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 59, in verify_and_add_to_queue
+    raise HTTPException(status_code=403, detail="Registration number mismatch")
+fastapi.exceptions.HTTPException: 403: Registration number mismatch
+
+2025-07-26 12:46:52,052 - ERROR - Registration number mismatch: expected jk0af5936, got jk01af5936
+2025-07-26 12:46:52,052 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 59, in verify_and_add_to_queue
+    raise HTTPException(status_code=403, detail="Registration number mismatch")
+fastapi.exceptions.HTTPException: 403: Registration number mismatch
+
+2025-07-26 12:47:11,565 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 32, in verify_and_add_to_queue
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 403: Only vehicle at front of queue (rank 1) can be released
+
+2025-07-26 12:47:18,363 - ERROR - Error in verify_and_add_to_queue: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 32, in verify_and_add_to_queue
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 403: Only vehicle at front of queue (rank 1) can be released
+

@@ -13,7 +13,7 @@ import traceback
 router = APIRouter()
 
 @router.post("/verify-and-queue-vehicle")
-async def verify_and_add_to_queue(request: QRRequest):
+async def verify_and_queue_vehicle(request: QRRequest):
     try:
         if "_" not in request.qr_data:
             raise HTTPException(status_code=400, detail="Invalid QR format")
