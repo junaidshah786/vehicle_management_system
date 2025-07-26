@@ -1,9 +1,10 @@
-from app.routers.firebase import db
+from app.services.firebase import db
 from fastapi import HTTPException
 from app.config.config import vehicle_collection_name
 
 from google.cloud import firestore
 from typing import List, Dict, Optional
+
 
 
 def fetch_registered_vehicle_summary(

@@ -3,8 +3,8 @@ import traceback
 from fastapi import FastAPI, HTTPException, APIRouter, Path
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
-from app.routers.firebase import db
-from app.routers.firestore_utils import delete_vehicle, fetch_registered_vehicle_summary, fetch_vehicle_data, update_vehicle
+from app.services.firebase import db
+from app.services.firestore_utils import delete_vehicle, fetch_registered_vehicle_summary, fetch_vehicle_data, update_vehicle
 from app.services.pdf_generator import generate_vehicle_icard_pdf
 from app.services.pydantic import VehicleRegistration, VehicleUpdateRequest
 from fastapi import Query

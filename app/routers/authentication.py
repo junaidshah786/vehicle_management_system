@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, APIRouter
 
 from ..services.login import create_access_token
 from app.services.pydantic import LoginRequest
-from app.routers.firebase import db
+from app.services.firebase import db
 
 app = FastAPI()
 router = APIRouter()
