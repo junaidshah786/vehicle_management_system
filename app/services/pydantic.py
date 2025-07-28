@@ -51,4 +51,4 @@ class VehicleUpdateRequest(BaseModel):
 
 class QRRequest(BaseModel):
     qr_data: str
-    username: str
+    name: str

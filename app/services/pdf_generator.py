@@ -14,7 +14,7 @@ from reportlab.lib.units import inch
 def generate_vehicle_icard_pdf(vehicle_id: str, vehicle: dict, logo_path: str = "E:/workspace/poc/vehicle_management_system/app/image utils/i_card_logo.png") -> BytesIO:
     try:
         # Generate QR code
-        qr_data = f"{vehicle_id}_{vehicle.get('registrationNumber', 'N/A')}"
+        qr_data = f"{vehicle_id}__{vehicle.get('registrationNumber', 'N/A')}__{vehicle.get('vehicleType', 'N/A')}"
         qr = qrcode.make(qr_data).convert("RGB")
 
         # PDF setup
