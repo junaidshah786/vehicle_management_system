@@ -4,6 +4,11 @@ from enum import Enum
 
 
 ########Login Request##########
+class SignupRequest(BaseModel):
+    username: str
+    name: str
+    contact: str
+    passwordHash: str
 
 class LoginRequest(BaseModel):
     username: str
@@ -52,3 +57,4 @@ class VehicleUpdateRequest(BaseModel):
 class QRRequest(BaseModel):
     qr_data: str
     name: str
+    contact: str
