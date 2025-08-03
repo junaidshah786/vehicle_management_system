@@ -70,8 +70,8 @@ async def verify_and_queue_vehicle(request: QRRequest):
             # 🚫 Reject if rank is not 1
             if current_rank != 1:
                 raise HTTPException(
-                    status_code=403,
-                    detail="Only vehicle at front of queue (rank 1) can be released"
+                    status_code=409,
+                    detail="Only vehicle on TOP (rank 1) can be released"
                 )
 
             # ✅ Proceed to release
