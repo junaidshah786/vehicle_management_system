@@ -1,14 +1,2 @@
-2025-08-03 10:22:50,669 - INFO - Login attempt for admin@!23.co
-2025-08-03 10:22:50,962 - ERROR - Error during login: Traceback (most recent call last):
-  File "E:\workspace\poc\vehicle_management_system\app\routers\authentication.py", line 52, in login
-    raise HTTPException(status_code=401, detail="Invalid username or password")
-fastapi.exceptions.HTTPException: 401: Invalid username or password
-
-2025-08-03 10:23:44,674 - INFO - Login attempt for admin@!23.co
-2025-08-03 10:23:45,710 - ERROR - Error during login: Traceback (most recent call last):
-  File "E:\workspace\poc\vehicle_management_system\app\routers\authentication.py", line 52, in login
-    raise HTTPException(status_code=401, detail="Invalid username or password")
-fastapi.exceptions.HTTPException: 401: Invalid username or password
-
-2025-08-03 10:26:12,586 - INFO - Login attempt for admin@rahsair.com
-2025-08-03 10:29:12,409 - INFO - Login attempt for admin@rahsair.com
+2025-08-03 11:41:50,050 - INFO - Processing vehicle ID: BY8yLuAMaaH6V7bpA6KG, Registration: jk01af4567, Type: innova
+2025-08-03 11:44:50,682 - INFO - Processing vehicle ID: yz6Rmwo5o3WmSlsp63E5, Registration: jk01aa2000, Type: sumo

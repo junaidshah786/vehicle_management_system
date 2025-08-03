@@ -1,6 +1,8 @@
+import logging
 from firebase_admin import firestore
 from datetime import datetime
 from app.services.firebase import db
+from typing import List, Dict, Any
 
 
 def get_queue_entry(vehicle_id: str):
@@ -76,3 +78,27 @@ def log_queue_history(vehicle_id: str, action: str, queue_rank: int, vehicle_typ
         "timestamp": datetime.utcnow()
     }
     db.collection("vehicleQueueHistory").add(history_entry)
+
+
+
+def fetch_vehicles_by_type_sorted(vehicle_type: str) -> List[Dict[str, Any]]:
+    """
+    Fetches all vehicles of a specific type from the queue,
+    sorted by their queue_rank (ascending).
+    """
+    try:
+
+        docs = db.collection("vehicleQueue").where("vehicle_type", "==", vehicle_type).stream()
+
+        vehicles = []
+        for doc in docs:
+            data = doc.to_dict()
+            # data["doc_id"] = doc.id
+            # data.pop("vehicle", None)
+            vehicles.append(data)
+
+        vehicles.sort(key=lambda x: x.get("queue_rank", float("inf")))
+        return vehicles
+    except Exception as e:
+        logging.error(f"Error fetching vehicles by type {vehicle_type}: {e}")
+        return []
