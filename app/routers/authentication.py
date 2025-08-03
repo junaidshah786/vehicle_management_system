@@ -59,7 +59,8 @@ async def login(login_details: LoginRequest):
 
         return {
             "accessToken": token,  # Replace with actual token generation logic
-            "username": user_data.get("name", "Unknown User"),
+            "username": user_data.get("username", "Unknown User"),
+            "name": user_data.get("name", "Unknown"),
             "role": user_data["role"],
             "tokenType": "bearer",
             "contact": user_data.get("contact", ""),

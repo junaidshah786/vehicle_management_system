@@ -11,3 +11,4 @@ fastapi.exceptions.HTTPException: 401: Invalid username or password
 fastapi.exceptions.HTTPException: 401: Invalid username or password
 
 2025-08-03 10:26:12,586 - INFO - Login attempt for admin@rahsair.com
+2025-08-03 10:29:12,409 - INFO - Login attempt for admin@rahsair.com
