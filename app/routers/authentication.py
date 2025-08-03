@@ -65,9 +65,9 @@ async def login(login_details: LoginRequest):
             "message": f"Login successful as {user_data['role']}"
         }
 
-    except Exception:
+    except Exception as e:
         logging.error(f"Error during login: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code= e.status_code if hasattr(e, 'status_code') else 500, detail=str(e))
 
 # Include the router in the main FastAPI app
 app.include_router(router)
