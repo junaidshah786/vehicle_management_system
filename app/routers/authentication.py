@@ -62,6 +62,7 @@ async def login(login_details: LoginRequest):
             "username": user_data.get("name", "Unknown User"),
             "role": user_data["role"],
             "tokenType": "bearer",
+            "contact": user_data.get("contact", ""),
             "message": f"Login successful as {user_data['role']}"
         }
 
