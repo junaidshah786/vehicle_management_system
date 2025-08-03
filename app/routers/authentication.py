@@ -37,9 +37,9 @@ async def signup(signup_details: SignupRequest):
         })
 
         return {"message": "Signup successful"}
-    except Exception:
+    except Exception as e:
         logging.error(f"Error during signup: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code= e.status_code if hasattr(e, 'status_code') else 500, detail=str(e))
 
 # 🔐 Unified Login for all roles
 @router.post("/login", tags=["Authentication"])
@@ -55,10 +55,10 @@ async def login(login_details: LoginRequest):
         if login_details.passwordHash != user_data["passwordHash"]:
             raise HTTPException(status_code=401, detail="Invalid username or password")
 
-        # token = create_access_token({"sub": login_details.username, "role": user_data["role"]})
+        token = create_access_token({"sub": login_details.username, "role": user_data["role"]})
 
         return {
-            "accessToken": "token_placeholder",  # Replace with actual token generation logic
+            "accessToken": token,  # Replace with actual token generation logic
             "username": user_data.get("name", "Unknown User"),
             "role": user_data["role"],
             "tokenType": "bearer",
