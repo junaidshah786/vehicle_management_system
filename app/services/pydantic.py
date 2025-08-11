@@ -58,3 +58,15 @@ class QRRequest(BaseModel):
     qr_data: str
     name: str
     contact: str
+
+
+######## Device Registration Request ##########
+class RegisterDeviceRequest(BaseModel):
+    userId: str
+    expoPushToken: str
+    sessionId: str
+
+######## Device Unregistration Request ##########
+class UnregisterDeviceRequest(BaseModel):
+    userId: str
+    sessionId: str

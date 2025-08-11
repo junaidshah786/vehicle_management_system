@@ -1,0 +1,33 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "vehicleQueue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "vehicle_type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "queue_rank",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "vehicleQueue",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "vehicle_type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "queue_rank",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

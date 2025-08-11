@@ -1,43 +1,38 @@
 import logging
+from app.config.config import QUEUE_HISTORY_COLLECTION, VEHICLE_QUEUE_COLLECTION, VEHICLES_COLLECTION
 from firebase_admin import firestore
 from datetime import datetime
 from app.services.firebase import db
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 
-def get_queue_entry(vehicle_id: str):
-    results = db.collection("vehicleQueue").where("vehicle_id", "==", vehicle_id).limit(1).stream()
-    for doc in results:
-        return doc.id, doc.to_dict()
-    return None, None
+
+# def release_vehicle_from_queue(doc_id: str, vehicle_type: str, current_rank: int):
+#     queue_ref = db.collection("vehicleQueue")
+
+#     # Delete the current entry
+#     queue_ref.document(doc_id).delete()
+
+#     # Update lower ranked vehicles
+#     lower_ranked_query = queue_ref \
+#         .where("vehicle_type", "==", vehicle_type) \
+#         .where("queue_rank", ">", current_rank) \
+#         .stream()
+
+#     batch = db.batch()
+#     for doc in lower_ranked_query:
+#         doc_ref = queue_ref.document(doc.id)
+#         doc_data = doc.to_dict()
+#         updated_rank = doc_data["queue_rank"] - 1
+#         batch.update(doc_ref, {"queue_rank": updated_rank})
+#     batch.commit()
 
 
-def release_vehicle_from_queue(doc_id: str, vehicle_type: str, current_rank: int):
-    queue_ref = db.collection("vehicleQueue")
-
-    # Delete the current entry
-    queue_ref.document(doc_id).delete()
-
-    # Update lower ranked vehicles
-    lower_ranked_query = queue_ref \
-        .where("vehicle_type", "==", vehicle_type) \
-        .where("queue_rank", ">", current_rank) \
-        .stream()
-
-    batch = db.batch()
-    for doc in lower_ranked_query:
-        doc_ref = queue_ref.document(doc.id)
-        doc_data = doc.to_dict()
-        updated_rank = doc_data["queue_rank"] - 1
-        batch.update(doc_ref, {"queue_rank": updated_rank})
-    batch.commit()
-
-
-def fetch_vehicle_details(vehicle_id: str):
-    doc = db.collection("vehicleDetails").document(vehicle_id).get()
-    if not doc.exists:
-        return None
-    return doc.to_dict()
+# def fetch_vehicle_details(vehicle_id: str):
+#     doc = db.collection("vehicleDetails").document(vehicle_id).get()
+#     if not doc.exists:
+#         return None
+#     return doc.to_dict()
 
 
 def get_next_queue_rank(vehicle_type: str) -> int:
@@ -51,33 +46,33 @@ def get_next_queue_rank(vehicle_type: str) -> int:
     return 1
 
 
-def add_vehicle_to_queue(vehicle_id: str, registration_number: str, vehicle_type: str, username: str) -> int:
-    next_rank = get_next_queue_rank(vehicle_type)
+# def add_vehicle_to_queue(vehicle_id: str, registration_number: str, vehicle_type: str, username: str) -> int:
+#     next_rank = get_next_queue_rank(vehicle_type)
 
-    queue_entry = {
-        "vehicle_id": vehicle_id,
-        "registration_number": registration_number,
-        "vehicle_type": vehicle_type,
-        "username": username,
-        "queue_rank": next_rank,
-        "status": "waiting",
-        "added_at": datetime.utcnow()
-    }
+#     queue_entry = {
+#         "vehicle_id": vehicle_id,
+#         "registration_number": registration_number,
+#         "vehicle_type": vehicle_type,
+#         "username": username,
+#         "queue_rank": next_rank,
+#         "status": "waiting",
+#         "added_at": datetime.utcnow()
+#     }
 
-    db.collection("vehicleQueue").add(queue_entry)
-    return next_rank
+#     db.collection("vehicleQueue").add(queue_entry)
+#     return next_rank
 
 
-def log_queue_history(vehicle_id: str, action: str, queue_rank: int, vehicle_type: str, username: str):
-    history_entry = {
-        "vehicle_id": vehicle_id,
-        "action": action,  # "added" or "removed"
-        "queue_rank": queue_rank,
-        "vehicle_type": vehicle_type,
-        "username": username,
-        "timestamp": datetime.utcnow()
-    }
-    db.collection("vehicleQueueHistory").add(history_entry)
+# def log_queue_history(vehicle_id: str, action: str, queue_rank: int, vehicle_type: str, username: str):
+#     history_entry = {
+#         "vehicle_id": vehicle_id,
+#         "action": action,  # "added" or "removed"
+#         "queue_rank": queue_rank,
+#         "vehicle_type": vehicle_type,
+#         "username": username,
+#         "timestamp": datetime.utcnow()
+#     }
+#     db.collection("vehicleQueueHistory").add(history_entry)
 
 
 
@@ -102,3 +97,129 @@ def fetch_vehicles_by_type_sorted(vehicle_type: str) -> List[Dict[str, Any]]:
     except Exception as e:
         logging.error(f"Error fetching vehicles by type {vehicle_type}: {e}")
         return []
+
+
+async def get_vehicle_from_queue(vehicle_id: str) -> Optional[Dict]:
+    """Get vehicle from Firestore queue"""
+    try:
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc = doc_ref.get()
+        return doc.to_dict() if doc.exists else None
+    except Exception as e:
+        logging.error(f"Error getting vehicle from queue: {e}")
+        return None
+
+async def get_vehicle_details_firestore(vehicle_id: str) -> Optional[Dict]:
+    """Get vehicle details from Firestore vehicles collection"""
+    try:
+        doc_ref = db.collection(VEHICLES_COLLECTION).document(vehicle_id)
+        doc = doc_ref.get()
+        return doc.to_dict() if doc.exists else None
+    except Exception as e:
+        logging.error(f"Error getting vehicle details: {e}")
+        return None
+
+async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str) -> int:
+    """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
+    try:
+        # Get next rank
+        next_rank = await get_next_queue_rank(vehicle_type)
+        
+        # Create vehicle queue entry
+        vehicle_queue_data = {
+            "vehicle_id": vehicle_id,
+            "registration_number": registration_number,
+            "vehicle_type": vehicle_type,
+            "queue_rank": next_rank,
+            "driver_name": driver_name,
+            "status": "waiting",
+            "queued_at": datetime.utcnow(),
+            "created_by": driver_name
+        }
+        
+        # DIRECT FIRESTORE WRITE - This automatically triggers Cloud Function
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc_ref.set(vehicle_queue_data)
+        
+        logging.info(f"Vehicle {vehicle_id} added to Firestore queue at rank {next_rank}")
+        return next_rank
+        
+    except Exception as e:
+        logging.error(f"Error adding vehicle to queue: {e}")
+        raise
+
+async def release_vehicle_from_queue_firestore(vehicle_id: str):
+    """Remove vehicle from Firestore queue - DIRECT DELETE (triggers Cloud Function)"""
+    try:
+        # DIRECT FIRESTORE DELETE - This automatically triggers Cloud Function
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc_ref.delete()
+        
+        logging.info(f"Vehicle {vehicle_id} released from Firestore queue")
+        
+    except Exception as e:
+        logging.error(f"Error releasing vehicle from queue: {e}")
+        raise
+
+async def get_next_queue_rank(vehicle_type: str) -> int:
+    """Get next rank for vehicle type"""
+    try:
+        # Query vehicles of same type to get max rank
+        query = db.collection(VEHICLE_QUEUE_COLLECTION)\
+                 .where("vehicle_type", "==", vehicle_type)\
+                 .order_by("queue_rank", direction=firestore.Query.DESCENDING)\
+                 .limit(1)
+        
+        docs = query.stream()
+        max_rank = 0
+        
+        for doc in docs:
+            max_rank = doc.to_dict().get("queue_rank", 0)
+            break
+            
+        return max_rank + 1
+        
+    except Exception as e:
+        logging.error(f"Error getting next queue rank: {e}")
+        return 1
+
+async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
+    """Update ranks of vehicles after one is removed - DIRECT FIRESTORE UPDATES (triggers Cloud Function)"""
+    try:
+        # Get all vehicles with higher ranks of same type
+        query = db.collection(VEHICLE_QUEUE_COLLECTION)\
+               .where("vehicle_type", "==", vehicle_type)\
+               .where("queue_rank", ">", removed_rank)
+        
+        docs = query.stream()
+        batch = db.batch()
+        
+        for doc in docs:
+            current_rank = doc.to_dict().get("queue_rank")
+            new_rank = current_rank - 1
+            
+            # DIRECT FIRESTORE UPDATE - This automatically triggers Cloud Function
+            batch.update(doc.reference, {"queue_rank": new_rank, "updated_at": datetime.utcnow()})
+        
+        batch.commit()
+        logging.info(f"Updated ranks after removing vehicle at rank {removed_rank}")
+        
+    except Exception as e:
+        logging.error(f"Error updating queue ranks: {e}")
+
+async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str):
+    """Log queue history to Firestore"""
+    try:
+        history_data = {
+            "vehicle_id": vehicle_id,
+            "action": action,
+            "queue_rank": rank,
+            "vehicle_type": vehicle_type,
+            "username": user,
+            "timestamp": datetime.utcnow()
+        }
+        
+        db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
+        
+    except Exception as e:
+        logging.error(f"Error logging queue history: {e}")

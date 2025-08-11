@@ -1,0 +1,2 @@
+token verification of each api
+delete queue vehicle, check admin credentials.
