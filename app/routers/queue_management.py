@@ -1,13 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import APIRouter, HTTPException
-from app.config.config import VEHICLE_QUEUE_COLLECTION, CLEAN_INACTIVE_SESSIONS_TIME
-from app.services.pydantic import QRRequest, RegisterDeviceRequest
+from app.config.config import QUEUE_HISTORY_COLLECTION, VEHICLE_QUEUE_COLLECTION, VEHICLES_COLLECTION
+from app.services.pydantic import QRRequest, RegisterDeviceRequest, TestFcmNotificationRequest, UnregisterDeviceRequest
 import logging
 import traceback
 from app.services.firebase import db
-from typing import  Dict, Any
 from fastapi import Query
-from typing import Dict, Any
+from typing import Optional, Dict, List, Any
+from firebase_admin import firestore, messaging
+import asyncio
 from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, fetch_vehicles_by_type_sorted, get_vehicle_details_firestore, get_vehicle_from_queue, log_queue_history_firestore, release_vehicle_from_queue_firestore, update_queue_ranks_after_removal
 router = APIRouter()
 
@@ -42,7 +43,270 @@ async def fetch_queue(
 
 
 
+async def get_active_device_tokens() -> List[str]:
+    """Fetch all active device FCM tokens from Firestore"""
+    try:
+        active_devices_ref = db.collection("activeDevices")
+        docs = active_devices_ref.stream()
+        
+        tokens = []
+        for doc in docs:
+            device_data = doc.to_dict()
+            token = device_data.get("fcm_token")
+            is_active = device_data.get("is_active", False)
+            
+            if token and is_active:
+                tokens.append(token)
+        
+        logging.info(f"Retrieved {len(tokens)} active device tokens")
+        return tokens
+        
+    except Exception as e:
+        logging.error(f"Error fetching active device tokens: {e}")
+        return []
 
+async def send_fcm_notification_to_active_devices(title: str, body: str, data: Dict = None):
+    """Send FCM notification to all active devices - Individual method only"""
+    try:
+        # Get active device tokens
+        tokens = await get_active_device_tokens()
+        
+        if not tokens:
+            logging.warning("No active device tokens found")
+            return
+        
+        # Prepare data payload (optional)
+        notification_data = data or {}
+        notification_data.update({
+            "action": "refresh_queue",
+            "timestamp": datetime.utcnow().isoformat()
+        })
+        
+        # Convert all data values to strings (FCM requirement)
+        string_data = {k: str(v) for k, v in notification_data.items()}
+        
+        successful_sends = 0
+        failed_tokens = []
+        
+        logging.info(f"Attempting to send FCM notifications to {len(tokens)} devices")
+        
+        # Send to each token individually
+        for i, token in enumerate(tokens):
+            try:
+                # Create individual message
+                message = messaging.Message(
+                    notification=messaging.Notification(
+                        title=title,
+                        body=body
+                    ),
+                    data=string_data,
+                    token=token
+                )
+                
+                # Send message synchronously in thread
+                def send_single_message():
+                    try:
+                        return messaging.send(message)
+                    except Exception as e:
+                        # Log the specific error for this token
+                        logging.error(f"Firebase messaging.send error for token {token[:10]}...: {str(e)}")
+                        raise e
+                
+                response = await asyncio.get_event_loop().run_in_executor(
+                    None, send_single_message
+                )
+                
+                successful_sends += 1
+                logging.debug(f"Successfully sent FCM to token {i+1}/{len(tokens)}: {token[:10]}...")
+                
+            except Exception as token_error:
+                failed_tokens.append(token)
+                error_msg = str(token_error)
+                
+                # Check if it's an authentication or configuration error
+                if "404" in error_msg:
+                    logging.error(f"FCM 404 Error - Possible Firebase configuration issue: {error_msg}")
+                elif "authentication" in error_msg.lower() or "unauthorized" in error_msg.lower():
+                    logging.error(f"FCM Authentication Error - Check Firebase credentials: {error_msg}")
+                elif "invalid" in error_msg.lower() or "not registered" in error_msg.lower():
+                    logging.warning(f"Invalid FCM token {token[:10]}...: {error_msg}")
+                else:
+                    logging.warning(f"Failed to send to token {token[:10]}...: {error_msg}")
+        
+        logging.info(f"FCM notifications completed: {successful_sends} successful, {len(failed_tokens)} failed out of {len(tokens)} total")
+        
+        # Clean up invalid tokens (only if they seem to be token-specific issues)
+        if failed_tokens:
+            # Only cleanup if errors seem to be invalid token related, not configuration issues
+            token_specific_errors = [t for t in failed_tokens if len(failed_tokens) < len(tokens)]
+            if token_specific_errors:
+                await cleanup_invalid_tokens(token_specific_errors)
+                logging.info(f"Cleaned up {len(token_specific_errors)} invalid tokens")
+        
+        return {
+            "total_tokens": len(tokens),
+            "successful": successful_sends,
+            "failed": len(failed_tokens)
+        }
+        
+    except Exception as e:
+        logging.error(f"Error in send_fcm_notification_to_active_devices: {e}")
+        logging.error(f"Full error details: {traceback.format_exc()}")
+        return {
+            "total_tokens": 0,
+            "successful": 0,
+            "failed": 0,
+            "error": str(e)
+        }
+
+async def cleanup_invalid_tokens(invalid_tokens: List[str]):
+    """Remove invalid FCM tokens from activeDevices collection"""
+    try:
+        if not invalid_tokens:
+            return
+            
+        # Query and remove devices with invalid tokens
+        active_devices_ref = db.collection("activeDevices")
+        
+        for token in invalid_tokens:
+            # Find and delete devices with this token
+            query = active_devices_ref.where("fcm_token", "==", token)
+            docs = query.stream()
+            
+            for doc in docs:
+                doc.reference.delete()
+                logging.info(f"Removed invalid token: {token}")
+                
+    except Exception as e:
+        logging.error(f"Error cleaning up invalid tokens: {e}")
+
+# Your existing functions (keeping them as they are)
+async def get_vehicle_from_queue(vehicle_id: str) -> Optional[Dict]:
+    """Get vehicle from Firestore queue"""
+    try:
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc = doc_ref.get()
+        return doc.to_dict() if doc.exists else None
+    except Exception as e:
+        logging.error(f"Error getting vehicle from queue: {e}")
+        return None
+
+async def get_vehicle_details_firestore(vehicle_id: str) -> Optional[Dict]:
+    """Get vehicle details from Firestore vehicles collection"""
+    try:
+        doc_ref = db.collection(VEHICLES_COLLECTION).document(vehicle_id)
+        doc = doc_ref.get()
+        return doc.to_dict() if doc.exists else None
+    except Exception as e:
+        logging.error(f"Error getting vehicle details: {e}")
+        return None
+
+async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str) -> int:
+    """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
+    try:
+        # Get next rank
+        next_rank = await get_next_queue_rank(vehicle_type)
+        
+        # Create vehicle queue entry
+        vehicle_queue_data = {
+            "vehicle_id": vehicle_id,
+            "registration_number": registration_number,
+            "vehicle_type": vehicle_type,
+            "queue_rank": next_rank,
+            "driver_name": driver_name,
+            "status": "waiting",
+            "queued_at": datetime.utcnow(),
+            "created_by": driver_name
+        }
+        
+        # DIRECT FIRESTORE WRITE - This automatically triggers Cloud Function
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc_ref.set(vehicle_queue_data)
+        
+        logging.info(f"Vehicle {vehicle_id} added to Firestore queue at rank {next_rank}")
+        return next_rank
+        
+    except Exception as e:
+        logging.error(f"Error adding vehicle to queue: {e}")
+        raise
+
+async def release_vehicle_from_queue_firestore(vehicle_id: str):
+    """Remove vehicle from Firestore queue - DIRECT DELETE (triggers Cloud Function)"""
+    try:
+        # DIRECT FIRESTORE DELETE - This automatically triggers Cloud Function
+        doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
+        doc_ref.delete()
+        
+        logging.info(f"Vehicle {vehicle_id} released from Firestore queue")
+        
+    except Exception as e:
+        logging.error(f"Error releasing vehicle from queue: {e}")
+        raise
+
+async def get_next_queue_rank(vehicle_type: str) -> int:
+    """Get next rank for vehicle type"""
+    try:
+        # Query vehicles of same type to get max rank
+        query = db.collection(VEHICLE_QUEUE_COLLECTION)\
+                 .where("vehicle_type", "==", vehicle_type)\
+                 .order_by("queue_rank", direction=firestore.Query.DESCENDING)\
+                 .limit(1)
+        
+        docs = query.stream()
+        max_rank = 0
+        
+        for doc in docs:
+            max_rank = doc.to_dict().get("queue_rank", 0)
+            break
+            
+        return max_rank + 1
+        
+    except Exception as e:
+        logging.error(f"Error getting next queue rank: {e}")
+        return 1
+
+async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
+    """Update ranks of vehicles after one is removed - DIRECT FIRESTORE UPDATES (triggers Cloud Function)"""
+    try:
+        # Get all vehicles with higher ranks of same type
+        query = db.collection(VEHICLE_QUEUE_COLLECTION)\
+               .where("vehicle_type", "==", vehicle_type)\
+               .where("queue_rank", ">", removed_rank)
+        
+        docs = query.stream()
+        batch = db.batch()
+        
+        for doc in docs:
+            current_rank = doc.to_dict().get("queue_rank")
+            new_rank = current_rank - 1
+            
+            # DIRECT FIRESTORE UPDATE - This automatically triggers Cloud Function
+            batch.update(doc.reference, {"queue_rank": new_rank, "updated_at": datetime.utcnow()})
+        
+        batch.commit()
+        logging.info(f"Updated ranks after removing vehicle at rank {removed_rank}")
+        
+    except Exception as e:
+        logging.error(f"Error updating queue ranks: {e}")
+
+async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str):
+    """Log queue history to Firestore"""
+    try:
+        history_data = {
+            "vehicle_id": vehicle_id,
+            "action": action,
+            "queue_rank": rank,
+            "vehicle_type": vehicle_type,
+            "username": user,
+            "timestamp": datetime.utcnow()
+        }
+        
+        db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
+        
+    except Exception as e:
+        logging.error(f"Error logging queue history: {e}")
+
+# Enhanced endpoint with FCM notifications
 @router.post("/verify-and-queue-vehicle")
 async def verify_and_queue_vehicle(request: QRRequest):
     try:
@@ -75,6 +339,19 @@ async def verify_and_queue_vehicle(request: QRRequest):
             # Log history in Firestore
             await log_queue_history_firestore(vehicle_id, "removed", current_rank, vehicle_type, request.name)
 
+            # 📱 Send FCM notification for vehicle release
+            await send_fcm_notification_to_active_devices(
+                title="Vehicle Released from Queue",
+                body=f"{vehicle_type} ({registration_number}) has been released from queue",
+                data={
+                    "vehicle_id": vehicle_id,
+                    "vehicle_type": vehicle_type,
+                    "registration_number": registration_number,
+                    "action": "vehicle_released",
+                    "previous_rank": str(current_rank)
+                }
+            )
+
             return {
                 "message": "Vehicle released from queue",
                 "vehicleId": vehicle_id,
@@ -103,6 +380,19 @@ async def verify_and_queue_vehicle(request: QRRequest):
         # Log history in Firestore
         await log_queue_history_firestore(vehicle_id, "added", next_rank, vehicle_type, request.name)
 
+        # 📱 Send FCM notification for vehicle addition
+        await send_fcm_notification_to_active_devices(
+            title="New Vehicle Added to Queue",
+            body=f"{vehicle_type} ({registration_number}) added to queue at position {next_rank}",
+            data={
+                "vehicle_id": vehicle_id,
+                "vehicle_type": vehicle_type,
+                "registration_number": registration_number,
+                "action": "vehicle_added",
+                "queue_rank": str(next_rank)
+            }
+        )
+
         return {
             "message": "Vehicle added to queue successfully",
             "vehicleId": vehicle_id,
@@ -114,86 +404,93 @@ async def verify_and_queue_vehicle(request: QRRequest):
         logging.error(f"Error in verify_and_add_to_queue: {traceback.format_exc()}")
         raise HTTPException(status_code= e.status_code if hasattr(e, 'status_code') else 500, detail=str(e))
 
-# Direct Firestore operations (NO manual notification calls)
+# Optional: Helper endpoint to manage active devices
+@router.post("/register-device")
+async def register_device(device_data: RegisterDeviceRequest):
+    """Register a device for FCM notifications"""
+    try:
+        device_id = device_data.device_id
+        fcm_token = device_data.fcm_token
+        username = device_data.username
+        
+        if not all([device_id, fcm_token]):
+            raise HTTPException(status_code=400, detail="device_id and fcm_token are required")
+        
+        # Store in activeDevices collection
+        device_doc_data = {
+            "device_id": device_id,
+            "fcm_token": fcm_token,
+            "username": username,
+            "is_active": True,
+            "last_seen": datetime.utcnow(),
+            "registered_at": datetime.utcnow()
+        }
+        
+        doc_ref = db.collection("activeDevices").document(device_id)
+        doc_ref.set(device_doc_data, merge=True)
+        
+        return {"message": "Device registered successfully"}
+        
+    except Exception as e:
+        logging.error(f"Error registering device: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
+# Optional: Test endpoint with detailed error reporting
+@router.post("/test-fcm")
+async def test_fcm_notification(test_data: TestFcmNotificationRequest):
+    """Test FCM notification functionality with detailed reporting"""
+    try:
+        title = test_data.title
+        body = test_data.body
+        
+        # Send test notification
+        result = await send_fcm_notification_to_active_devices(
+            title=title,
+            body=body,
+            data={
+                "test": "true",
+                "action": "test_notification",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+        )
+        
+        return {
+            "message": "Test notification process completed",
+            "result": result,
+            "status": "success" if result.get("successful", 0) > 0 else "no_success"
+        }
+        
+    except Exception as e:
+        logging.error(f"Error in test FCM endpoint: {e}")
+        logging.error(f"Full error: {traceback.format_exc()}")
+        return {
+            "message": "Test notification failed",
+            "error": str(e),
+            "status": "error"
+        }
 
-# Additional endpoints that work directly with Firestore
-
-# @router.get("/queue")
-# async def get_current_queue(vehicle_type: Optional[str] = None):
-#     """Get current queue from Firestore"""
-#     try:
-#         query = db.collection(VEHICLE_QUEUE_COLLECTION)
+@router.post("/unregister-device")
+async def unregister_device(device_data: UnregisterDeviceRequest):
+    """Unregister a device from FCM notifications"""
+    try:
+        device_id = device_data.device_id
         
-#         if vehicle_type:
-#             query = query.where("vehicle_type", "==", vehicle_type)
-            
-#         query = query.order_by("queue_rank")
+        if not device_id:
+            raise HTTPException(status_code=400, detail="device_id is required")
         
-#         docs = query.stream()
-#         queue = []
+        # Update device as inactive
+        doc_ref = db.collection("activeDevices").document(device_id)
+        doc_ref.update({
+            "is_active": False,
+            "last_seen": datetime.utcnow()
+        })
         
-#         for doc in docs:
-#             data = doc.to_dict()
-#             queue.append(data)
-            
-#         return {"queue": queue, "count": len(queue)}
+        return {"message": "Device unregistered successfully"}
         
-#     except Exception as e:
-#         logging.error(f"Error getting current queue: {e}")
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @router.put("/queue/{vehicle_id}/status")
-# async def update_vehicle_status(vehicle_id: str, new_status: str):
-#     """Update vehicle status - DIRECT FIRESTORE UPDATE (triggers Cloud Function)"""
-#     try:
-#         doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
-        
-#         # Check if vehicle exists
-#         if not doc_ref.get().exists:
-#             raise HTTPException(status_code=404, detail="Vehicle not found in queue")
-        
-#         # DIRECT FIRESTORE UPDATE - This automatically triggers Cloud Function
-#         doc_ref.update({
-#             "status": new_status,
-#             "updated_at": firestore.SERVER_TIMESTAMP
-#         })
-        
-#         return {"message": f"Vehicle {vehicle_id} status updated to {new_status}"}
-        
-#     except Exception as e:
-#         logging.error(f"Error updating vehicle status: {e}")
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# @router.post("/queue/reorder")
-# async def reorder_queue(new_order: List[Dict[str, Any]]):
-#     """Reorder entire queue - DIRECT FIRESTORE BATCH UPDATE (triggers Cloud Function)"""
-#     try:
-#         batch = db.batch()
-        
-#         for item in new_order:
-#             vehicle_id = item.get("vehicle_id")
-#             new_rank = item.get("queue_rank")
-            
-#             if not vehicle_id or not new_rank:
-#                 continue
-                
-#             doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
-            
-#             # DIRECT FIRESTORE UPDATE - Each update automatically triggers Cloud Function
-#             batch.update(doc_ref, {
-#                 "queue_rank": new_rank,
-#                 "updated_at": firestore.SERVER_TIMESTAMP
-#             })
-        
-#         batch.commit()
-        
-#         return {"message": "Queue reordered successfully"}
-        
-#     except Exception as e:
-#         logging.error(f"Error reordering queue: {e}")
-#         raise HTTPException(status_code=500, detail=str(e))
-
+    except Exception as e:
+        logging.error(f"Error unregistering device: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
 @router.delete("/queue/{vehicle_id}")
 async def remove_vehicle_from_queue(vehicle_id: str):
@@ -220,96 +517,4 @@ async def remove_vehicle_from_queue(vehicle_id: str):
         
     except Exception as e:
         logging.error(f"Error removing vehicle from queue: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# cloud function calling endpoints (register, unregister, heartbeat)
-
-@router.post("/register-device")
-async def register_device_session(device_data: RegisterDeviceRequest):
-    """Register device for current app session only"""
-    try:
-        user_id = device_data.userId
-        expo_token = device_data.expoPushToken
-        session_id = device_data.sessionId
-        
-        # Use combination of userId and sessionId as document ID
-        doc_id = f"{user_id}_{session_id}"
-        
-        device_doc = {
-            "userId": user_id,
-            "expoPushToken": expo_token,
-            "sessionId": session_id,
-            "isActive": True,
-            "registeredAt": datetime.utcnow(),
-            "lastSeen": datetime.utcnow()
-        }
-        
-        # Store in activeDevices collection (temporary, session-based)
-        doc_ref = db.collection("activeDevices").document(doc_id)
-        doc_ref.set(device_doc)
-        
-        return {"message": "Device registered for current session"}
-        
-    except Exception as e:
-        logging.error(f"Error registering device: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.post("/unregister-device")
-async def unregister_device_session(device_data: RegisterDeviceRequest):
-    """Unregister device when app goes inactive"""
-    try:
-        user_id = device_data.userId
-        session_id = device_data.sessionId
-        
-        doc_id = f"{user_id}_{session_id}"
-        doc_ref = db.collection("activeDevices").document(doc_id)
-        
-        # Remove the device from active list
-        doc_ref.delete()
-        
-        return {"message": "Device unregistered"}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.post("/heartbeat")
-async def device_heartbeat(heartbeat_data: RegisterDeviceRequest ):
-    """Keep device registration alive while app is active"""
-    try:
-        user_id = heartbeat_data.userId
-        session_id = heartbeat_data.sessionId
-        
-        doc_id = f"{user_id}_{session_id}"
-        doc_ref = db.collection("activeDevices").document(doc_id)
-        
-        # Update last seen timestamp
-        doc_ref.update({"lastSeen": datetime.utcnow()})
-        
-        return {"message": "Heartbeat recorded"}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-# Background cleanup function (run periodically)
-@router.post("/cleanup-inactive-devices")
-async def cleanup_inactive_devices():
-    """Remove devices that haven't been seen recently"""
-    try:
-        cutoff_time = datetime.now() - timedelta(minutes=CLEAN_INACTIVE_SESSIONS_TIME)  # 15 minutes ago
-        
-        query = db.collection("activeDevices")\
-                 .where("lastSeen", "<", cutoff_time)
-        
-        docs = query.stream()
-        batch = db.batch()
-        
-        for doc in docs:
-            batch.delete(doc.reference)
-        
-        batch.commit()
-        
-        return {"message": "Inactive devices cleaned up"}
-        
-    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

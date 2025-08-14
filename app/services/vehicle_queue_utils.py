@@ -161,6 +161,7 @@ async def release_vehicle_from_queue_firestore(vehicle_id: str):
         logging.error(f"Error releasing vehicle from queue: {e}")
         raise
 
+
 async def get_next_queue_rank(vehicle_type: str) -> int:
     """Get next rank for vehicle type"""
     try:

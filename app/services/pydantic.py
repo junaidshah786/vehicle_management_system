@@ -62,11 +62,15 @@ class QRRequest(BaseModel):
 
 ######## Device Registration Request ##########
 class RegisterDeviceRequest(BaseModel):
-    userId: str
-    expoPushToken: str
-    sessionId: str
+    device_id: str
+    fcm_token: str
+    username: str
 
 ######## Device Unregistration Request ##########
 class UnregisterDeviceRequest(BaseModel):
-    userId: str
-    sessionId: str
+    device_id: str
+
+
+class TestFcmNotificationRequest(BaseModel):
+    title: str = "Test Notification"
+    body: str = "This is a test notification."
