@@ -208,8 +208,27 @@ async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str)
     except Exception as e:
         logging.error(f"Error updating queue ranks: {e}")
 
-async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str):
-    """Log queue history to Firestore"""
+# async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str):
+#     """Log queue history to Firestore"""
+#     try:
+#         history_data = {
+#             "vehicle_id": vehicle_id,
+#             "action": action,
+#             "queue_rank": rank,
+#             "vehicle_type": vehicle_type,
+#             "username": user,
+#             "timestamp": datetime.utcnow()
+#         }
+        
+#         db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
+        
+#     except Exception as e:
+#         logging.error(f"Error logging queue history: {e}")
+
+
+
+async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str, checkin_time: datetime = None, checkout_time: datetime = None):
+    """Log queue history to Firestore with check-in and check-out times"""
     try:
         history_data = {
             "vehicle_id": vehicle_id,
@@ -217,10 +236,33 @@ async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, v
             "queue_rank": rank,
             "vehicle_type": vehicle_type,
             "username": user,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.utcnow(),
+            "checkin_time": checkin_time,
+            "checkout_time": checkout_time
         }
-        
         db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
-        
     except Exception as e:
         logging.error(f"Error logging queue history: {e}")
+
+
+async def cleanup_invalid_tokens(invalid_tokens: List[str]):
+    """Remove invalid FCM tokens from activeDevices collection"""
+    try:
+        if not invalid_tokens:
+            return
+            
+        # Query and remove devices with invalid tokens
+        active_devices_ref = db.collection("activeDevices")
+        
+        for token in invalid_tokens:
+            # Find and delete devices with this token
+            query = active_devices_ref.where("fcm_token", "==", token)
+            docs = query.stream()
+            
+            for doc in docs:
+                doc.reference.delete()
+                logging.info(f"Removed invalid token: {token}")
+                
+    except Exception as e:
+        logging.error(f"Error cleaning up invalid tokens: {e}")
+
