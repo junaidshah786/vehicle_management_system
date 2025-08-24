@@ -67,7 +67,7 @@ async def queue_history_report(
         filename = f"queue_history_{start_date}_to_{end_date}.xlsx"
         return StreamingResponse(
             output,
-            mediaType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f"attachment; filename={filename}"},
         )
     except Exception as e:
