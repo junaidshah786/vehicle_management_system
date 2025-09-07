@@ -1,26 +1,55 @@
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
-from app.config.config import QUEUE_HISTORY_COLLECTION, VEHICLE_QUEUE_COLLECTION, VEHICLES_COLLECTION
+from app.config.config import VEHICLE_QUEUE_COLLECTION
 from app.services.pydantic import QRRequest, RegisterDeviceRequest, TestFcmNotificationRequest, UnregisterDeviceRequest
 import logging
 import traceback
 from app.services.firebase import db
 from fastapi import Query
-from typing import Optional, Dict, List, Any
+from typing import Dict, List, Any
 from firebase_admin import firestore, messaging
 import asyncio
 from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, cleanup_invalid_tokens, fetch_vehicles_by_type_sorted, get_vehicle_details_firestore, get_vehicle_from_queue, log_queue_history_firestore, release_vehicle_from_queue_firestore, update_queue_ranks_after_removal
 router = APIRouter()
 
 
+# @router.get("/queue", response_model=Dict[str, Any])
+# async def fetch_queue(
+#     vehicle_type: str = Query(..., description="Type of vehicle to filter by"),
+#     page: int = Query(1, ge=1, description="Page number"),
+#     limit: int = Query(10, ge=1, le=100, description="Number of items per page")
+# ):
+#     try:
+#         all_vehicles = fetch_vehicles_by_type_sorted(vehicle_type)
+        
+#         if not all_vehicles:
+#             return {"message": "No vehicles found in queue", "data": []}
+
+#         start = (page - 1) * limit
+#         end = start + limit
+#         paginated_vehicles = all_vehicles[start:end]
+
+#         return {
+#             "message": "Vehicles fetched successfully",
+#             "total": len(all_vehicles),
+#             "page": page,
+#             "limit": limit,
+#             "data": paginated_vehicles
+#         }
+
 @router.get("/queue", response_model=Dict[str, Any])
 async def fetch_queue(
     vehicle_type: str = Query(..., description="Type of vehicle to filter by"),
+    vehicle_shift: str = Query(None, description="Vehicle shift (morning/day/night)"),  # <-- Added
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=100, description="Number of items per page")
 ):
     try:
         all_vehicles = fetch_vehicles_by_type_sorted(vehicle_type)
+        
+        # Filter by vehicleShift if provided
+        if vehicle_shift:
+            all_vehicles = [v for v in all_vehicles if v.get("vehicleShift") == vehicle_shift]
         
         if not all_vehicles:
             return {"message": "No vehicles found in queue", "data": []}
@@ -160,117 +189,6 @@ async def send_fcm_notification_to_active_devices(title: str, body: str, data: D
         }
 
 
-
-# # Your existing functions (keeping them as they are)
-# async def get_vehicle_from_queue(vehicle_id: str) -> Optional[Dict]:
-#     """Get vehicle from Firestore queue"""
-#     try:
-#         doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
-#         doc = doc_ref.get()
-#         return doc.to_dict() if doc.exists else None
-#     except Exception as e:
-#         logging.error(f"Error getting vehicle from queue: {e}")
-#         return None
-
-# async def get_vehicle_details_firestore(vehicle_id: str) -> Optional[Dict]:
-#     """Get vehicle details from Firestore vehicles collection"""
-#     try:
-#         doc_ref = db.collection(VEHICLES_COLLECTION).document(vehicle_id)
-#         doc = doc_ref.get()
-#         return doc.to_dict() if doc.exists else None
-#     except Exception as e:
-#         logging.error(f"Error getting vehicle details: {e}")
-#         return None
-
-# async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str) -> int:
-#     """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
-#     try:
-#         # Get next rank
-#         next_rank = await get_next_queue_rank(vehicle_type)
-        
-#         # Create vehicle queue entry
-#         vehicle_queue_data = {
-#             "vehicle_id": vehicle_id,
-#             "registration_number": registration_number,
-#             "vehicle_type": vehicle_type,
-#             "queue_rank": next_rank,
-#             "driver_name": driver_name,
-#             "status": "waiting",
-#             "queued_at": datetime.utcnow(),
-#             "created_by": driver_name
-#         }
-        
-#         # DIRECT FIRESTORE WRITE - This automatically triggers Cloud Function
-#         doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
-#         doc_ref.set(vehicle_queue_data)
-        
-#         logging.info(f"Vehicle {vehicle_id} added to Firestore queue at rank {next_rank}")
-#         return next_rank
-        
-#     except Exception as e:
-#         logging.error(f"Error adding vehicle to queue: {e}")
-#         raise
-
-# async def release_vehicle_from_queue_firestore(vehicle_id: str):
-#     """Remove vehicle from Firestore queue - DIRECT DELETE (triggers Cloud Function)"""
-#     try:
-#         # DIRECT FIRESTORE DELETE - This automatically triggers Cloud Function
-#         doc_ref = db.collection(VEHICLE_QUEUE_COLLECTION).document(vehicle_id)
-#         doc_ref.delete()
-        
-#         logging.info(f"Vehicle {vehicle_id} released from Firestore queue")
-        
-#     except Exception as e:
-#         logging.error(f"Error releasing vehicle from queue: {e}")
-#         raise
-
-# async def get_next_queue_rank(vehicle_type: str) -> int:
-#     """Get next rank for vehicle type"""
-#     try:
-#         # Query vehicles of same type to get max rank
-#         query = db.collection(VEHICLE_QUEUE_COLLECTION)\
-#                  .where("vehicle_type", "==", vehicle_type)\
-#                  .order_by("queue_rank", direction=firestore.Query.DESCENDING)\
-#                  .limit(1)
-        
-#         docs = query.stream()
-#         max_rank = 0
-        
-#         for doc in docs:
-#             max_rank = doc.to_dict().get("queue_rank", 0)
-#             break
-            
-#         return max_rank + 1
-        
-#     except Exception as e:
-#         logging.error(f"Error getting next queue rank: {e}")
-#         return 1
-
-# async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
-#     """Update ranks of vehicles after one is removed - DIRECT FIRESTORE UPDATES (triggers Cloud Function)"""
-#     try:
-#         # Get all vehicles with higher ranks of same type
-#         query = db.collection(VEHICLE_QUEUE_COLLECTION)\
-#                .where("vehicle_type", "==", vehicle_type)\
-#                .where("queue_rank", ">", removed_rank)
-        
-#         docs = query.stream()
-#         batch = db.batch()
-        
-#         for doc in docs:
-#             current_rank = doc.to_dict().get("queue_rank")
-#             new_rank = current_rank - 1
-            
-#             # DIRECT FIRESTORE UPDATE - This automatically triggers Cloud Function
-#             batch.update(doc.reference, {"queue_rank": new_rank, "updated_at": datetime.utcnow()})
-        
-#         batch.commit()
-#         logging.info(f"Updated ranks after removing vehicle at rank {removed_rank}")
-        
-#     except Exception as e:
-#         logging.error(f"Error updating queue ranks: {e}")
-
-
 # Enhanced endpoint with FCM notifications
 @router.post("/verify-and-queue-vehicle")
 async def verify_and_queue_vehicle(request: QRRequest):
@@ -287,7 +205,8 @@ async def verify_and_queue_vehicle(request: QRRequest):
         if existing_entry:
             current_rank = existing_entry.get("queue_rank")
             vehicle_type = existing_entry.get("vehicle_type")
-
+            vehicle_shift = existing_entry.get("vehicleShift")  # <-- Added
+            
             # 🚫 Reject if rank is not 1
             if current_rank != 1:
                 raise HTTPException(
@@ -315,6 +234,7 @@ async def verify_and_queue_vehicle(request: QRRequest):
                 data={
                     "vehicle_id": vehicle_id,
                     "vehicle_type": vehicle_type,
+                    "vehicle_shift": vehicle_shift,  # <-- Added
                     "registration_number": registration_number,
                     "action": "vehicle_released",
                     "previous_rank": str(current_rank)
@@ -325,6 +245,7 @@ async def verify_and_queue_vehicle(request: QRRequest):
                 "message": "Vehicle released from queue",
                 "vehicleId": vehicle_id,
                 "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,  # <-- Added
                 "previousQueueRank": current_rank
             }
 
@@ -339,12 +260,13 @@ async def verify_and_queue_vehicle(request: QRRequest):
             raise HTTPException(status_code=403, detail="Registration number mismatch")
 
         vehicle_type = vehicle_data.get("vehicleType")
+        vehicle_shift = vehicle_data.get("vehicleShift")  # <-- Added
         if not vehicle_type:
             logging.error(f"Vehicle type missing for vehicle ID {vehicle_id}")
             raise HTTPException(status_code=400, detail="Vehicle type missing")
 
         # Add to queue - Direct Firestore CREATE (triggers Cloud Function automatically)
-        next_rank = await add_vehicle_to_queue_firestore(vehicle_id, registration_number, vehicle_type, request.name)
+        next_rank = await add_vehicle_to_queue_firestore(vehicle_id, registration_number, vehicle_type, request.name, vehicle_shift)
 
         # Log history in Firestore
         await log_queue_history_firestore(
@@ -360,6 +282,7 @@ async def verify_and_queue_vehicle(request: QRRequest):
             data={
                 "vehicle_id": vehicle_id,
                 "vehicle_type": vehicle_type,
+                "vehicle_shift": vehicle_shift,  # <-- Added
                 "registration_number": registration_number,
                 "action": "vehicle_added",
                 "queue_rank": str(next_rank)
@@ -370,7 +293,8 @@ async def verify_and_queue_vehicle(request: QRRequest):
             "message": "Vehicle added to queue successfully",
             "vehicleId": vehicle_id,
             "queueRank": next_rank,
-            "vehicleType": vehicle_type
+            "vehicleType": vehicle_type,
+            "vehicleShift": vehicle_shift  # <-- Added
         }
 
     except Exception as e:

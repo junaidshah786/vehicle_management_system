@@ -82,14 +82,19 @@ def fetch_vehicles_by_type_sorted(vehicle_type: str) -> List[Dict[str, Any]]:
     sorted by their queue_rank (ascending).
     """
     try:
-
         docs = db.collection("vehicleQueue").where("vehicle_type", "==", vehicle_type).stream()
 
         vehicles = []
         for doc in docs:
             data = doc.to_dict()
-            # data["doc_id"] = doc.id
-            # data.pop("vehicle", None)
+            # Ensure vehicleShift is included if present
+            if "vehicleShift" not in data:
+                # Try to fetch from vehicle details if missing
+                vehicle_id = data.get("vehicle_id")
+                if vehicle_id:
+                    vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
+                    if vehicle_details.exists:
+                        data["vehicleShift"] = vehicle_details.to_dict().get("vehicleShift")
             vehicles.append(data)
 
         vehicles.sort(key=lambda x: x.get("queue_rank", float("inf")))
@@ -119,11 +124,16 @@ async def get_vehicle_details_firestore(vehicle_id: str) -> Optional[Dict]:
         logging.error(f"Error getting vehicle details: {e}")
         return None
 
-async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str) -> int:
+async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str, vehicle_shift:str) -> int:
     """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
     try:
         # Get next rank
         next_rank = await get_next_queue_rank(vehicle_type)
+        
+        # Fetch vehicleShift from vehicle details
+        vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
+        if vehicle_details.exists:
+            vehicle_shift = vehicle_details.to_dict().get("vehicleShift")
         
         # Create vehicle queue entry
         vehicle_queue_data = {
@@ -134,7 +144,8 @@ async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: s
             "driver_name": driver_name,
             "status": "waiting",
             "queued_at": datetime.utcnow(),
-            "created_by": driver_name
+            "created_by": driver_name,
+            "vehicleShift": vehicle_shift  # <-- Added
         }
         
         # DIRECT FIRESTORE WRITE - This automatically triggers Cloud Function
@@ -230,11 +241,17 @@ async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str)
 async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str, checkin_time: datetime = None, checkout_time: datetime = None):
     """Log queue history to Firestore with check-in and check-out times"""
     try:
+        # Fetch vehicleShift from vehicle details
+        vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
+        vehicle_shift = None
+        if vehicle_details.exists:
+            vehicle_shift = vehicle_details.to_dict().get("vehicleShift")
         history_data = {
             "vehicle_id": vehicle_id,
             "action": action,
             "queue_rank": rank,
             "vehicle_type": vehicle_type,
+            "vehicleShift": vehicle_shift,  # <-- Added
             "username": user,
             "timestamp": datetime.utcnow(),
             "checkin_time": checkin_time,

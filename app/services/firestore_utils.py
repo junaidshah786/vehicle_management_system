@@ -11,6 +11,7 @@ def fetch_registered_vehicle_summary(
     vehicleType: Optional[str] = None,
     seatingCapacity: Optional[int] = None,
     status: Optional[str] = None,
+    vehicleShift: Optional[str] = None,  # <-- Added
     search: Optional[str] = None
 ) -> List[Dict]:
     vehicles_ref = db.collection(vehicle_collection_name)
@@ -28,7 +29,8 @@ def fetch_registered_vehicle_summary(
             "seatingCapacity": data.get("seatingCapacity"),
             "registrationNumber": data.get("registrationNumber"),
             "vehicleType": data.get("vehicleType"),
-            "status": data.get("status")
+            "status": data.get("status"),
+            "vehicleShift": data.get("vehicleShift"),  # <-- Added
         }
 
         # Apply filters
@@ -37,6 +39,8 @@ def fetch_registered_vehicle_summary(
         if seatingCapacity and summary["seatingCapacity"] != seatingCapacity:
             continue
         if status and summary["status"] != status:
+            continue
+        if vehicleShift and summary["vehicleShift"] != vehicleShift:  # <-- Added
             continue
 
         # Apply search (case-insensitive)

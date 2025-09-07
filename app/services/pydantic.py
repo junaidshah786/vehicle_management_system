@@ -26,6 +26,12 @@ class VehicleTypeEnum(str, Enum):
     bolero = "bolero"
     other = "other"
 
+# Enum for vehicle shift
+class VehicleShiftEnum(str, Enum):
+    morning = "morning"
+    day = "day"
+    night = "night"
+
 # Simplified model with inline constraints
 class VehicleRegistration(BaseModel):
     registrationNumber: str = Field(..., min_length=6, max_length=15, description="e.g., JK01AB1234")
@@ -34,6 +40,7 @@ class VehicleRegistration(BaseModel):
     ownerPhone: str = Field(..., pattern=r"^\d{10}$")
     seatingCapacity: int = Field(..., gt=0, lt=100)
     status: str = Field(default="active", pattern="^(active|inactive)$")
+    vehicleShift: VehicleShiftEnum  # <-- Added
 
 
 ######## Vehicle Update Request#########
@@ -50,6 +57,7 @@ class VehicleUpdateRequest(BaseModel):
     status: Optional[VehicleStatus] = None  # Only active/inactive allowed
     seatingCapacity: Optional[int] = None
     ownerPhone: Optional[str] = None
+    vehicleShift: Optional[VehicleShiftEnum] = None  # <-- Added
 
 
 ######## queue check in##########

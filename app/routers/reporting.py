@@ -17,6 +17,7 @@ async def queue_history_report(
     start_date: str = Query(..., description="Report start date (YYYY-MM-DD)"),
     end_date: str = Query(..., description="Report end date (YYYY-MM-DD)"),
     vehicle_type: str = Query(None, description="Vehicle type to filter (optional)"),
+    vehicle_shift: str = Query(None, description="Vehicle shift to filter (optional)")
 ):
     try:
         # Parse dates
@@ -33,6 +34,9 @@ async def queue_history_report(
         )
         if vehicle_type:
             query = query.where("vehicle_type", "==", vehicle_type)
+        if vehicle_shift:
+            query = query.where("vehicleShift", "==", vehicle_shift)  # <-- Added
+
         docs = query.stream()
 
         # Collect data

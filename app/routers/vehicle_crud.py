@@ -21,6 +21,7 @@ async def get_registered_vehicles(
     vehicleType: Optional[str] = Query(None),
     seatingCapacity: Optional[int] = Query(None),
     status: Optional[str] = Query(None),
+    vehicleShift: Optional[str] = Query(None, description="Vehicle shift (morning/day/night)"),  # <-- Added
     search: Optional[str] = Query(None, description="Search by ownerName, registrationNumber, or phone")
 ):
     try:
@@ -28,6 +29,7 @@ async def get_registered_vehicles(
             vehicleType=vehicleType,
             seatingCapacity=seatingCapacity,
             status=status,
+            vehicleShift=vehicleShift,  # <-- Added
             search=search
         )
 
@@ -70,7 +72,8 @@ def register_vehicle(data: VehicleRegistration):
         vehicle_data.update({
             "_id": doc_ref.id,
             "createdAt": now,
-            "updatedAt": now
+            "updatedAt": now,
+            "vehicleShift": vehicle_data.get("vehicleShift"),  # <-- Added
         })
 
         doc_ref.set(vehicle_data)

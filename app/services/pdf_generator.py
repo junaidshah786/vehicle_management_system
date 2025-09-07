@@ -10,7 +10,6 @@ import os
 from reportlab.lib.units import inch
 
 
-
 def generate_vehicle_icard_pdf(vehicle_id: str, vehicle: dict, logo_path: str = "E:/workspace/poc/vehicle_management_system/app/image utils/i_card_logo.png") -> BytesIO:
     try:
         # Generate QR code
@@ -69,32 +68,50 @@ def generate_vehicle_icard_pdf(vehicle_id: str, vehicle: dict, logo_path: str = 
         c.setFont("Helvetica-Bold", 12)
         c.drawCentredString(card_x + card_width / 2, title_y, "VEHICLE I-CARD")
 
-        # Vehicle Info with Border
+        # Vehicle Info in Tabular Format
         labels = {
             "registrationNumber": "Registration No.",
             "vehicleType": "Vehicle Type",
-            "ownerName": "Owner Name",
+            "vehicleShift": "Vehicle Shift",
             "ownerPhone": "Phone Number",
             "seatingCapacity": "Seating Capacity"
         }
 
-        c.setFont("Helvetica", 9.5)
         info_start_y = title_y - 30
-        spacing = 18
+        row_height = 18
         info_box_x = card_x + 15
-        info_box_y = info_start_y - (len(labels) * spacing) + 8
+        info_box_y = info_start_y - (len(labels) * row_height) + 8
         info_box_width = card_width - 30
-        info_box_height = (len(labels) * spacing) + 8
+        info_box_height = (len(labels) * row_height) + 8
 
-        # Draw border for info
+        # Draw main border for info table
         c.setStrokeColor(colors.black)
         c.setLineWidth(0.7)
         c.roundRect(info_box_x, info_box_y, info_box_width, info_box_height, radius=6, stroke=1, fill=0)
 
-        # Draw text inside box
+        # Table column widths (adjust as needed)
+        label_col_width = info_box_width * 0.45  # 45% for labels
+        value_col_width = info_box_width * 0.55  # 55% for values
+        
+        # Draw table rows and content
         for i, (key, label) in enumerate(labels.items()):
+            current_y = info_start_y - i * row_height
+            
+            # Draw horizontal lines between rows (except for the last row)
+            if i > 0:
+                c.line(info_box_x, current_y + 9, info_box_x + info_box_width, current_y + 9)
+            
+            # Draw vertical line to separate columns
+            c.line(info_box_x + label_col_width, current_y + 9, info_box_x + label_col_width, current_y - 9)
+            
+            # Draw label (bold)
+            c.setFont("Helvetica-Bold", 9.5)
+            c.drawString(info_box_x + 8, current_y, label)
+            
+            # Draw value (regular)
+            c.setFont("Helvetica", 9.5)
             value = str(vehicle.get(key, "N/A"))
-            c.drawString(info_box_x + 10, info_start_y - i * spacing, f"{label}: {value}")
+            c.drawString(info_box_x + label_col_width + 8, current_y, value)
 
         # Footer
         c.setFont("Helvetica-Oblique", 8)
@@ -110,9 +127,6 @@ def generate_vehicle_icard_pdf(vehicle_id: str, vehicle: dict, logo_path: str = 
     except Exception as e:
         logging.error(f"Error generating vehicle I-Card PDF: {e}")
         raise RuntimeError("Failed to generate vehicle I-Card PDF") from e
-
-
-
 
 
 
