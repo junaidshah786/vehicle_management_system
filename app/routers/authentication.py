@@ -55,15 +55,29 @@ async def login(login_details: LoginRequest):
         if login_details.passwordHash != user_data["passwordHash"]:
             raise HTTPException(status_code=401, detail="Invalid username or password")
 
+        # Fetch organisation details using static organisation ID
+        org_id = "8sOsuW71glmgmFT4YnEa"
+        org_ref = db.collection("OrganisationDetails").document(org_id)
+        org_doc = org_ref.get()
+        latitude, longitude = None, None
+        if org_doc.exists:
+            org_data = org_doc.to_dict()
+            location = org_data.get("location")  # GeoPoint field
+            if location:
+                latitude = location.latitude
+                longitude = location.longitude
+
         token = create_access_token({"sub": login_details.username, "role": user_data["role"]})
 
         return {
-            "accessToken": token,  # Replace with actual token generation logic
+            "accessToken": token,
             "username": user_data.get("username", "Unknown User"),
             "name": user_data.get("name", "Unknown"),
             "role": user_data["role"],
             "tokenType": "bearer",
             "contact": user_data.get("contact", ""),
+            "latitude": latitude,
+            "longitude": longitude,
             "message": f"Login successful as {user_data['role']}"
         }
 
