@@ -78,6 +78,7 @@ async def login(login_details: LoginRequest):
             "contact": user_data.get("contact", ""),
             "latitude": latitude,
             "longitude": longitude,
+            "radius": org_data.get("radius") if org_doc.exists else None,
             "message": f"Login successful as {user_data['role']}"
         }
 
