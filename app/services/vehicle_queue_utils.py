@@ -76,32 +76,66 @@ def get_next_queue_rank(vehicle_type: str) -> int:
 
 
 
-def fetch_vehicles_by_type_sorted(vehicle_type: str) -> List[Dict[str, Any]]:
+# def fetch_vehicles_by_type_sorted(vehicle_type: str) -> List[Dict[str, Any]]:
+#     """
+#     Fetches all vehicles of a specific type from the queue,
+#     sorted by their queue_rank (ascending).
+#     """
+#     try:
+#         docs = db.collection("vehicleQueue").where("vehicle_type", "==", vehicle_type).stream()
+
+#         vehicles = []
+#         for doc in docs:
+#             data = doc.to_dict()
+#             # Ensure vehicleShift is included if present
+#             if "vehicleShift" not in data:
+#                 # Try to fetch from vehicle details if missing
+#                 vehicle_id = data.get("vehicle_id")
+#                 if vehicle_id:
+#                     vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
+#                     if vehicle_details.exists:
+#                         data["vehicleShift"] = vehicle_details.to_dict().get("vehicleShift")
+#             vehicles.append(data)
+
+#         vehicles.sort(key=lambda x: x.get("queue_rank", float("inf")))
+#         return vehicles
+#     except Exception as e:
+#         logging.error(f"Error fetching vehicles by type {vehicle_type}: {e}")
+#         return []
+
+
+
+def fetch_all_vehicles_sorted() -> List[Dict[str, Any]]:
     """
-    Fetches all vehicles of a specific type from the queue,
-    sorted by their queue_rank (ascending).
+    Fetches all vehicles from the queue,
+    ensuring vehicleShift is included if present,
+    sorted by queue_rank (ascending).
     """
     try:
-        docs = db.collection("vehicleQueue").where("vehicle_type", "==", vehicle_type).stream()
+        docs = db.collection("vehicleQueue").stream()
 
         vehicles = []
         for doc in docs:
             data = doc.to_dict()
+            
             # Ensure vehicleShift is included if present
             if "vehicleShift" not in data:
-                # Try to fetch from vehicle details if missing
                 vehicle_id = data.get("vehicle_id")
                 if vehicle_id:
                     vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
                     if vehicle_details.exists:
                         data["vehicleShift"] = vehicle_details.to_dict().get("vehicleShift")
+            
             vehicles.append(data)
 
+        # Sort vehicles by queue_rank
         vehicles.sort(key=lambda x: x.get("queue_rank", float("inf")))
         return vehicles
+
     except Exception as e:
-        logging.error(f"Error fetching vehicles by type {vehicle_type}: {e}")
+        logging.error(f"Error fetching all vehicles: {e}")
         return []
+
 
 
 async def get_vehicle_from_queue(vehicle_id: str) -> Optional[Dict]:
