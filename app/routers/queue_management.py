@@ -10,7 +10,7 @@ from fastapi import Query
 from typing import Dict, List, Any
 from firebase_admin import firestore, messaging
 import asyncio
-from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, cleanup_invalid_tokens, fetch_all_vehicles_sorted, get_vehicle_details_firestore, get_vehicle_from_queue, log_queue_history_firestore, release_vehicle_from_queue_firestore, update_queue_ranks_after_removal
+from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, cleanup_invalid_tokens, fetch_all_vehicles_sorted, fetch_vehicles_by_type_sorted, get_vehicle_details_firestore, get_vehicle_from_queue, log_queue_history_firestore, release_vehicle_from_queue_firestore, update_queue_ranks_after_removal
 router = APIRouter()
 
 
@@ -38,38 +38,38 @@ router = APIRouter()
 #             "data": paginated_vehicles
 #         }
 
-# @router.get("/queue", response_model=Dict[str, Any])
-# async def fetch_queue(
-#     vehicle_type: str = Query(..., description="Type of vehicle to filter by"),
-#     vehicle_shift: str = Query(None, description="Vehicle shift (morning/day/night)"),  # <-- Added
-#     page: int = Query(1, ge=1, description="Page number"),
-#     limit: int = Query(10, ge=1, le=100, description="Number of items per page")
-# ):
-#     try:
-#         all_vehicles = fetch_vehicles_by_type_sorted(vehicle_type)
+@router.get("/fetch_queue", response_model=Dict[str, Any])
+async def fetch_queue(
+    vehicle_type: str = Query(..., description="Type of vehicle to filter by"),
+    vehicle_shift: str = Query(None, description="Vehicle shift (morning/day/night)"),  # <-- Added
+    page: int = Query(1, ge=1, description="Page number"),
+    limit: int = Query(10, ge=1, le=100, description="Number of items per page")
+):
+    try:
+        all_vehicles = fetch_vehicles_by_type_sorted(vehicle_type)
         
-#         # Filter by vehicleShift if provided
-#         if vehicle_shift:
-#             all_vehicles = [v for v in all_vehicles if v.get("vehicleShift") == vehicle_shift]
+        # Filter by vehicleShift if provided
+        if vehicle_shift:
+            all_vehicles = [v for v in all_vehicles if v.get("vehicleShift") == vehicle_shift]
         
-#         if not all_vehicles:
-#             return {"message": "No vehicles found in queue", "data": []}
+        if not all_vehicles:
+            return {"message": "No vehicles found in queue", "data": []}
 
-#         start = (page - 1) * limit
-#         end = start + limit
-#         paginated_vehicles = all_vehicles[start:end]
+        start = (page - 1) * limit
+        end = start + limit
+        paginated_vehicles = all_vehicles[start:end]
 
-#         return {
-#             "message": "Vehicles fetched successfully",
-#             "total": len(all_vehicles),
-#             "page": page,
-#             "limit": limit,
-#             "data": paginated_vehicles
-#         }
+        return {
+            "message": "Vehicles fetched successfully",
+            "total": len(all_vehicles),
+            "page": page,
+            "limit": limit,
+            "data": paginated_vehicles
+        }
 
-#     except Exception as e:
-#         logging.error(f"Error in fetch_queue: {traceback.format_exc()}")
-#         raise HTTPException(status_code=500, detail="Failed to fetch vehicle queue")
+    except Exception as e:
+        logging.error(f"Error in fetch_queue: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail="Failed to fetch vehicle queue")
 
 @router.get("/queue", response_model=Dict[str, Any])
 async def fetch_queue(
