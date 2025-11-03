@@ -142,6 +142,7 @@ async def get_active_device_tokens() -> List[str]:
 async def send_fcm_notification_to_active_devices(title: str, body: str, data: Dict = None):
     """Send FCM notification to all active devices - Individual method only"""
     try:
+        logging.info("Preparing to send FCM notifications to active devices")
         # Get active device tokens
         tokens = await get_active_device_tokens()
         
@@ -420,6 +421,8 @@ async def check_in_vehicle(request: CheckInRequest):
             checkout_time=None
         )
 
+        logging.info(f"Vehicle {vehicle_id} added to queue at position {next_rank}")
+
         # Send FCM notification
         await send_fcm_notification_to_active_devices(
             title="New Vehicle Added to Queue",
@@ -444,6 +447,7 @@ async def check_in_vehicle(request: CheckInRequest):
         }
 
     except HTTPException:
+        logging.info("HTTPException occurred in check_in_vehicle")
         raise
     except Exception as e:
         logging.error(f"Error in check_in_vehicle: {traceback.format_exc()}")
