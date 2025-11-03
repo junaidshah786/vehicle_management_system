@@ -2,41 +2,20 @@ from collections import defaultdict
 from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from app.config.config import VEHICLE_QUEUE_COLLECTION
-from app.services.pydantic import QRRequest, RegisterDeviceRequest, TestFcmNotificationRequest, UnregisterDeviceRequest
-import logging
+from app.services.pydantic import RegisterDeviceRequest, TestFcmNotificationRequest, UnregisterDeviceRequest
 import traceback
 from app.services.firebase import db
 from fastapi import Query
 from typing import Dict, List, Any
-from firebase_admin import firestore, messaging
+from firebase_admin import messaging
 import asyncio
+from pydantic import BaseModel
+import logging
 from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, cleanup_invalid_tokens, fetch_all_vehicles_sorted, fetch_vehicles_by_type_sorted, get_vehicle_details_firestore, get_vehicle_from_queue, log_queue_history_firestore, release_vehicle_from_queue_firestore, update_queue_ranks_after_removal
+
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
-
-# @router.get("/queue", response_model=Dict[str, Any])
-# async def fetch_queue(
-#     vehicle_type: str = Query(..., description="Type of vehicle to filter by"),
-#     page: int = Query(1, ge=1, description="Page number"),
-#     limit: int = Query(10, ge=1, le=100, description="Number of items per page")
-# ):
-#     try:
-#         all_vehicles = fetch_vehicles_by_type_sorted(vehicle_type)
-        
-#         if not all_vehicles:
-#             return {"message": "No vehicles found in queue", "data": []}
-
-#         start = (page - 1) * limit
-#         end = start + limit
-#         paginated_vehicles = all_vehicles[start:end]
-
-#         return {
-#             "message": "Vehicles fetched successfully",
-#             "total": len(all_vehicles),
-#             "page": page,
-#             "limit": limit,
-#             "data": paginated_vehicles
-#         }
 
 @router.get("/fetch_queue", response_model=Dict[str, Any])
 async def fetch_queue(
@@ -191,9 +170,10 @@ async def send_fcm_notification_to_active_devices(title: str, body: str, data: D
                 response = await asyncio.get_event_loop().run_in_executor(
                     None, send_single_message
                 )
+                logging.info(f"FCM response for token {i+1}/{len(tokens)}: {response}")
                 
                 successful_sends += 1
-                logging.debug(f"Successfully sent FCM to token {i+1}/{len(tokens)}: {token[:10]}...")
+                logging.info(f"Successfully sent FCM to token {i+1}/{len(tokens)}: {token[:10]}...")
                 
             except Exception as token_error:
                 failed_tokens.append(token)
@@ -349,11 +329,6 @@ async def send_fcm_notification_to_active_devices(title: str, body: str, data: D
 #         raise HTTPException(status_code= e.status_code if hasattr(e, 'status_code') else 500, detail=str(e))
 
 
-from pydantic import BaseModel
-from fastapi import HTTPException
-import logging
-import traceback
-from datetime import datetime
 
 # Request Models
 class CheckInRequest(BaseModel):
@@ -422,7 +397,7 @@ async def check_in_vehicle(request: CheckInRequest):
             checkout_time=None
         )
 
-        logging.info(f"Vehicle {vehicle_id} added to queue at position {next_rank}")
+        logger.info(f"Vehicle {vehicle_id} added to queue at position {next_rank}")
 
         # Send FCM notification
         await send_fcm_notification_to_active_devices(
