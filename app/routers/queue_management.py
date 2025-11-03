@@ -126,8 +126,9 @@ async def get_active_device_tokens() -> List[str]:
         tokens = []
         for doc in docs:
             device_data = doc.to_dict()
-            token = device_data.get("fcm_token")
-            is_active = device_data.get("is_active", False)
+            logging.info(f"Device data fetched: {device_data}")
+            token = device_data.get("fcmToken")
+            is_active = device_data.get("isActive", False)
             
             if token and is_active:
                 tokens.append(token)

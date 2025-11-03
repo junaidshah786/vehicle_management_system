@@ -1,0 +1,13 @@
+2025-11-03 11:50:37,732 - INFO - Check-in: Vehicle ID: RHfdbacQzJvawJfG8Dsy, Registration: jk01p8676, Type: innova
+2025-11-03 11:50:39,120 - INFO - Vehicle RHfdbacQzJvawJfG8Dsy added to Firestore queue at rank 1
+2025-11-03 11:50:39,313 - INFO - Vehicle RHfdbacQzJvawJfG8Dsy added to queue at position 1
+2025-11-03 11:50:39,313 - INFO - Preparing to send FCM notifications to active devices
+2025-11-03 11:50:39,397 - INFO - Device data fetched: {'registeredAt': DatetimeWithNanoseconds(2025, 10, 22, 6, 32, 4, 871844, tzinfo=datetime.timezone.utc), 'isActive': True, 'username': 'anonymous', 'deviceId': 'device_1758004780408_eabxqwdqj', 'lastSeen': DatetimeWithNanoseconds(2025, 10, 22, 6, 32, 4, 871839, tzinfo=datetime.timezone.utc), 'fcmToken': 'f1Cu4FQ4Tc-tRUUixzXqKE:APA91bEks0cGGsYwQnPWj_j_NxiAoItdYsd0h4qwye11E5yFYW59Uvb7LGLDztnnRgvudZ8DkT5NezgQNp1LRIWDYCk0kcaOhoqN5Q-FX-twxa4m6e-koCU'}
+2025-11-03 11:50:39,397 - INFO - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 3, 6, 8, 14, 605116, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 3, 6, 8, 14, 605111, tzinfo=datetime.timezone.utc)}
+2025-11-03 11:50:39,404 - INFO - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 10, 16, 6, 38, 30, 748896, tzinfo=datetime.timezone.utc), 'username': 'admin@rahsair.com', 'deviceId': 'device_1760596655659_xllo50xsf', 'fcmToken': 'erF7lf-nQZq0-8j0IHu4P9:APA91bGLCzFZm4fmj3u3F6aZ4TGdGau5OC8xzRqzfufl7eHEQLWuz7yQp43sWaYzgVHmelOhvBC2chwlAifKQ0XLaVIFJ9k_H6ZWeM0o-urYP8kRXRyCfZc', 'lastSeen': DatetimeWithNanoseconds(2025, 10, 16, 6, 38, 30, 748890, tzinfo=datetime.timezone.utc)}
+2025-11-03 11:50:39,404 - INFO - Retrieved 3 active device tokens
+2025-11-03 11:50:39,404 - INFO - Attempting to send FCM notifications to 3 devices
+2025-11-03 11:50:41,883 - ERROR - Firebase messaging.send error for token erF7lf-nQZ...: Requested entity was not found.
+2025-11-03 11:50:41,883 - WARNING - Failed to send to token erF7lf-nQZ...: Requested entity was not found.
+2025-11-03 11:50:41,883 - INFO - FCM notifications completed: 2 successful, 1 failed out of 3 total
+2025-11-03 11:50:41,994 - INFO - Cleaned up 1 invalid tokens
