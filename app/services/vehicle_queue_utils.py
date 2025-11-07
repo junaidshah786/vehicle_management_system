@@ -189,7 +189,7 @@ async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: s
     """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
     try:
         # Get next rank
-        next_rank = await get_next_queue_rank(vehicle_type)
+        next_rank = await get_next_queue_rank(vehicle_type, vehicle_shift)
         
         # Fetch vehicleShift from vehicle details
         vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
@@ -234,12 +234,13 @@ async def release_vehicle_from_queue_firestore(vehicle_id: str):
         raise
 
 
-async def get_next_queue_rank(vehicle_type: str) -> int:
-    """Get next rank for vehicle type"""
+async def get_next_queue_rank(vehicle_type: str, vehicle_shift: str) -> int:
+    """Get next rank for vehicle type and shift"""
     try:
-        # Query vehicles of same type to get max rank
+        # Query vehicles of same type AND same shift
         query = db.collection(VEHICLE_QUEUE_COLLECTION)\
                  .where("vehicle_type", "==", vehicle_type)\
+                 .where("vehicleShift", "==", vehicle_shift)\
                  .order_by("queue_rank", direction=firestore.Query.DESCENDING)\
                  .limit(1)
         
@@ -255,6 +256,7 @@ async def get_next_queue_rank(vehicle_type: str) -> int:
     except Exception as e:
         logging.error(f"Error getting next queue rank: {e}")
         return 1
+
 
 async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
     """Update ranks of vehicles after one is removed - DIRECT FIRESTORE UPDATES (triggers Cloud Function)"""

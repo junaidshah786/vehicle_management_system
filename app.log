@@ -1,0 +1,255 @@
+2025-11-07 11:03:56 - INFO - uvicorn.error - Started server process [30644]
+2025-11-07 11:03:56 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 11:03:56 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 11:04:04 - INFO - uvicorn.access - 127.0.0.1:62550 - "GET /docs HTTP/1.1" 200
+2025-11-07 11:04:04 - INFO - uvicorn.access - 127.0.0.1:62550 - "GET /openapi.json HTTP/1.1" 200
+2025-11-07 11:06:31 - INFO - root - Check-in: Vehicle ID: RHfdbacQzJvawJfG8Dsy, Registration: jk01p8676, Type: innova
+2025-11-07 11:06:33 - INFO - root - Vehicle RHfdbacQzJvawJfG8Dsy added to Firestore queue at rank 1
+2025-11-07 11:06:34 - INFO - app.routers.queue_management - Vehicle RHfdbacQzJvawJfG8Dsy added to queue at position 1
+2025-11-07 11:06:34 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 11:06:34 - INFO - root - Device data fetched: {'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 35, 30, 542267, tzinfo=datetime.timezone.utc), 'isActive': True, 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 35, 30, 542264, tzinfo=datetime.timezone.utc), 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk'}
+2025-11-07 11:06:34 - INFO - root - Retrieved 1 active device tokens
+2025-11-07 11:06:34 - INFO - root - Attempting to send FCM notifications to 1 devices
+2025-11-07 11:06:36 - INFO - root - FCM response for token 1/1: projects/vehiclemanagementsystem-e76c4/messages/0:1762493795330751%dcd566b9dcd566b9
+2025-11-07 11:06:36 - INFO - root - Successfully sent FCM to token 1/1: dNUVrEI9SA...
+2025-11-07 11:06:36 - INFO - root - FCM notifications completed: 1 successful, 0 failed out of 1 total
+2025-11-07 11:06:36 - INFO - uvicorn.access - 127.0.0.1:57007 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-07 11:38:37 - INFO - uvicorn.error - Shutting down
+2025-11-07 11:38:37 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 11:38:37 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 11:38:37 - INFO - uvicorn.error - Finished server process [30644]
+2025-11-07 20:34:23 - INFO - uvicorn.error - Started server process [16980]
+2025-11-07 20:34:23 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:34:23 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:35:35 - INFO - uvicorn.access - 127.0.0.1:52103 - "GET /docs HTTP/1.1" 200
+2025-11-07 20:35:35 - INFO - uvicorn.access - 127.0.0.1:52103 - "GET /openapi.json HTTP/1.1" 200
+2025-11-07 20:35:46 - INFO - root - Check-in: Vehicle ID: 5nsngRv8SWrxT5kOqfjz, Registration: jk01t1111, Type: sumo
+2025-11-07 20:35:48 - ERROR - root - Error getting next queue rank: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVTaGlmdBABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+2025-11-07 20:35:48 - INFO - root - Vehicle 5nsngRv8SWrxT5kOqfjz added to Firestore queue at rank 1
+2025-11-07 20:35:49 - INFO - app.routers.queue_management - Vehicle 5nsngRv8SWrxT5kOqfjz added to queue at position 1
+2025-11-07 20:35:49 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 20:35:49 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929733, tzinfo=datetime.timezone.utc), 'username': 'shahzada@gmail.com', 'deviceId': 'device_1759853941925_s0fzvrt9l', 'fcmToken': 'ftplsyEBTeeKQRFozKQUkC:APA91bHXXnEBMpt1Ez-ASWhcYTWCdMb2wn84AgvCraefTV-wwMl0EE4b7RWv8DCjEB_Zy3wOtigB8gbi6c4JDvgrdcpC2NFLGce36jDOjkTxz8GfkWn5tSA', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929729, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:35:49 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855834, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855829, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:35:49 - INFO - root - Retrieved 2 active device tokens
+2025-11-07 20:35:49 - INFO - root - Attempting to send FCM notifications to 2 devices
+2025-11-07 20:35:50 - INFO - root - FCM response for token 1/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762527949789174%dcd566b9dcd566b9
+2025-11-07 20:35:50 - INFO - root - Successfully sent FCM to token 1/2: ftplsyEBTe...
+2025-11-07 20:35:50 - INFO - root - FCM response for token 2/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762527950111876%dcd566b9dcd566b9
+2025-11-07 20:35:50 - INFO - root - Successfully sent FCM to token 2/2: dNUVrEI9SA...
+2025-11-07 20:35:50 - INFO - root - FCM notifications completed: 2 successful, 0 failed out of 2 total
+2025-11-07 20:35:50 - INFO - uvicorn.access - 127.0.0.1:62160 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-07 20:36:17 - INFO - root - Check-in: Vehicle ID: RRdxRcz7ymdJm4zHQQnK, Registration: jk01w1111, Type: sumo
+2025-11-07 20:36:17 - ERROR - root - Error getting next queue rank: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVTaGlmdBABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+2025-11-07 20:36:17 - INFO - root - Vehicle RRdxRcz7ymdJm4zHQQnK added to Firestore queue at rank 1
+2025-11-07 20:36:18 - INFO - app.routers.queue_management - Vehicle RRdxRcz7ymdJm4zHQQnK added to queue at position 1
+2025-11-07 20:36:18 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 20:36:18 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929733, tzinfo=datetime.timezone.utc), 'username': 'shahzada@gmail.com', 'deviceId': 'device_1759853941925_s0fzvrt9l', 'fcmToken': 'ftplsyEBTeeKQRFozKQUkC:APA91bHXXnEBMpt1Ez-ASWhcYTWCdMb2wn84AgvCraefTV-wwMl0EE4b7RWv8DCjEB_Zy3wOtigB8gbi6c4JDvgrdcpC2NFLGce36jDOjkTxz8GfkWn5tSA', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929729, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:36:18 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855834, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855829, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:36:18 - INFO - root - Retrieved 2 active device tokens
+2025-11-07 20:36:18 - INFO - root - Attempting to send FCM notifications to 2 devices
+2025-11-07 20:36:18 - INFO - root - FCM response for token 1/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762527977874576%dcd566b9dcd566b9
+2025-11-07 20:36:18 - INFO - root - Successfully sent FCM to token 1/2: ftplsyEBTe...
+2025-11-07 20:36:18 - INFO - root - FCM response for token 2/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762527978066905%dcd566b9dcd566b9
+2025-11-07 20:36:18 - INFO - root - Successfully sent FCM to token 2/2: dNUVrEI9SA...
+2025-11-07 20:36:18 - INFO - root - FCM notifications completed: 2 successful, 0 failed out of 2 total
+2025-11-07 20:36:18 - INFO - uvicorn.access - 127.0.0.1:54345 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-07 20:36:52 - INFO - uvicorn.access - 127.0.0.1:49809 - "POST /v1/vehicle/check-out HTTP/1.1" 422
+2025-11-07 20:36:58 - INFO - root - Check-out: Vehicle ID: RRdxRcz7ymdJm4zHQQnK, Registration: jk01w1111
+2025-11-07 20:36:58 - INFO - root - Vehicle RRdxRcz7ymdJm4zHQQnK released from Firestore queue
+2025-11-07 20:36:59 - INFO - root - Updated ranks after removing vehicle at rank 1
+2025-11-07 20:36:59 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 20:36:59 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929733, tzinfo=datetime.timezone.utc), 'username': 'shahzada@gmail.com', 'deviceId': 'device_1759853941925_s0fzvrt9l', 'fcmToken': 'ftplsyEBTeeKQRFozKQUkC:APA91bHXXnEBMpt1Ez-ASWhcYTWCdMb2wn84AgvCraefTV-wwMl0EE4b7RWv8DCjEB_Zy3wOtigB8gbi6c4JDvgrdcpC2NFLGce36jDOjkTxz8GfkWn5tSA', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929729, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:36:59 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855834, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855829, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:36:59 - INFO - root - Retrieved 2 active device tokens
+2025-11-07 20:36:59 - INFO - root - Attempting to send FCM notifications to 2 devices
+2025-11-07 20:36:59 - INFO - root - FCM response for token 1/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762528019076084%dcd566b9dcd566b9
+2025-11-07 20:36:59 - INFO - root - Successfully sent FCM to token 1/2: ftplsyEBTe...
+2025-11-07 20:36:59 - INFO - root - FCM response for token 2/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762528019307415%dcd566b9dcd566b9
+2025-11-07 20:36:59 - INFO - root - Successfully sent FCM to token 2/2: dNUVrEI9SA...
+2025-11-07 20:36:59 - INFO - root - FCM notifications completed: 2 successful, 0 failed out of 2 total
+2025-11-07 20:36:59 - INFO - uvicorn.access - 127.0.0.1:51322 - "POST /v1/vehicle/check-out HTTP/1.1" 200
+2025-11-07 20:50:20 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:50:20 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:50:20 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:50:20 - INFO - uvicorn.error - Finished server process [16980]
+2025-11-07 20:50:55 - INFO - uvicorn.error - Started server process [4176]
+2025-11-07 20:50:55 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:50:55 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:51:12 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:51:12 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:51:12 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:51:12 - INFO - uvicorn.error - Finished server process [4176]
+2025-11-07 20:51:14 - INFO - uvicorn.error - Started server process [23680]
+2025-11-07 20:51:14 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:51:14 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:52:01 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:52:01 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:52:01 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:52:01 - INFO - uvicorn.error - Finished server process [23680]
+2025-11-07 20:52:02 - INFO - uvicorn.error - Started server process [25876]
+2025-11-07 20:52:02 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:52:02 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:52:27 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:52:27 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:52:27 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:52:27 - INFO - uvicorn.error - Finished server process [25876]
+2025-11-07 20:52:29 - INFO - uvicorn.error - Started server process [19532]
+2025-11-07 20:52:29 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:52:29 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:52:31 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:52:32 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:52:32 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:52:32 - INFO - uvicorn.error - Finished server process [19532]
+2025-11-07 20:52:33 - INFO - uvicorn.error - Started server process [31704]
+2025-11-07 20:52:33 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:52:33 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:52:36 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:52:36 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:52:36 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:52:36 - INFO - uvicorn.error - Finished server process [31704]
+2025-11-07 20:52:37 - INFO - uvicorn.error - Started server process [7400]
+2025-11-07 20:52:37 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:52:37 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:52:58 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:52:59 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:52:59 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:52:59 - INFO - uvicorn.error - Finished server process [7400]
+2025-11-07 20:53:01 - INFO - uvicorn.error - Started server process [25948]
+2025-11-07 20:53:01 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:01 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:02 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:02 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:53:02 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:53:02 - INFO - uvicorn.error - Finished server process [25948]
+2025-11-07 20:53:04 - INFO - uvicorn.error - Started server process [30456]
+2025-11-07 20:53:04 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:04 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:04 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:05 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:53:05 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:53:05 - INFO - uvicorn.error - Finished server process [30456]
+2025-11-07 20:53:07 - INFO - uvicorn.error - Started server process [11772]
+2025-11-07 20:53:07 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:07 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:19 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:19 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:53:19 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:53:19 - INFO - uvicorn.error - Finished server process [11772]
+2025-11-07 20:53:22 - INFO - uvicorn.error - Started server process [18088]
+2025-11-07 20:53:22 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:22 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:22 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:22 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:53:22 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:53:22 - INFO - uvicorn.error - Finished server process [18088]
+2025-11-07 20:53:24 - INFO - uvicorn.error - Started server process [25772]
+2025-11-07 20:53:24 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:24 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:30 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:30 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-07 20:53:30 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-07 20:53:30 - INFO - uvicorn.error - Finished server process [25772]
+2025-11-07 20:53:32 - INFO - uvicorn.error - Started server process [30808]
+2025-11-07 20:53:32 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:32 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:53:48 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:53:48 - INFO - uvicorn.error - Finished server process [30808]
+2025-11-07 20:53:48 - ERROR - uvicorn.error - Traceback (most recent call last):
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 636, in run_until_complete
+    self.run_forever()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 603, in run_forever
+    self._run_once()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 1909, in _run_once
+    handle._run()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 70, in serve
+    with self.capture_signals():
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\contextlib.py", line 142, in __exit__
+    next(self.gen)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 331, in capture_signals
+    signal.raise_signal(captured_signal)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\starlette\routing.py", line 701, in lifespan
+    await receive()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\queues.py", line 159, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-11-07 20:53:52 - INFO - uvicorn.error - Started server process [30996]
+2025-11-07 20:53:52 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-07 20:53:52 - INFO - uvicorn.error - Application startup complete.
+2025-11-07 20:54:02 - INFO - uvicorn.access - 127.0.0.1:64829 - "GET /docs HTTP/1.1" 200
+2025-11-07 20:54:03 - INFO - uvicorn.access - 127.0.0.1:64829 - "GET /openapi.json HTTP/1.1" 200
+2025-11-07 20:54:10 - INFO - uvicorn.access - 127.0.0.1:52205 - "GET /v1/notifications/stream HTTP/1.1" 200
+2025-11-07 20:55:18 - INFO - root - Check-in: Vehicle ID: RHfdbacQzJvawJfG8Dsy, Registration: jk01p8676, Type: innova
+2025-11-07 20:55:19 - ERROR - root - Error getting next queue rank: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/vehiclemanagementsystem-e76c4/firestore/indexes?create_composite=CmJwcm9qZWN0cy92ZWhpY2xlbWFuYWdlbWVudHN5c3RlbS1lNzZjNC9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvdmVoaWNsZVF1ZXVlL2luZGV4ZXMvXxABGhAKDHZlaGljbGVTaGlmdBABGhAKDHZlaGljbGVfdHlwZRABGg4KCnF1ZXVlX3JhbmsQAhoMCghfX25hbWVfXxAC
+2025-11-07 20:55:19 - INFO - root - Vehicle RHfdbacQzJvawJfG8Dsy added to Firestore queue at rank 1
+2025-11-07 20:55:19 - INFO - app.routers.queue_management - Vehicle RHfdbacQzJvawJfG8Dsy added to queue at position 1
+2025-11-07 20:55:19 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 20:55:19 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929733, tzinfo=datetime.timezone.utc), 'username': 'shahzada@gmail.com', 'deviceId': 'device_1759853941925_s0fzvrt9l', 'fcmToken': 'ftplsyEBTeeKQRFozKQUkC:APA91bHXXnEBMpt1Ez-ASWhcYTWCdMb2wn84AgvCraefTV-wwMl0EE4b7RWv8DCjEB_Zy3wOtigB8gbi6c4JDvgrdcpC2NFLGce36jDOjkTxz8GfkWn5tSA', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929729, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:55:19 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855834, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855829, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:55:19 - INFO - root - Retrieved 2 active device tokens
+2025-11-07 20:55:19 - INFO - root - Attempting to send FCM notifications to 2 devices
+2025-11-07 20:55:20 - INFO - root - FCM response for token 1/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762529119974143%dcd566b9dcd566b9
+2025-11-07 20:55:20 - INFO - root - Successfully sent FCM to token 1/2: ftplsyEBTe...
+2025-11-07 20:55:21 - INFO - root - FCM response for token 2/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762529120450434%dcd566b9dcd566b9
+2025-11-07 20:55:21 - INFO - root - Successfully sent FCM to token 2/2: dNUVrEI9SA...
+2025-11-07 20:55:21 - INFO - root - FCM notifications completed: 2 successful, 0 failed out of 2 total
+2025-11-07 20:55:21 - INFO - uvicorn.access - 127.0.0.1:54359 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-07 20:56:27 - INFO - uvicorn.access - 127.0.0.1:59324 - "GET /v1/notifications/stream HTTP/1.1" 200
+2025-11-07 20:56:50 - INFO - root - Check-out: Vehicle ID: RHfdbacQzJvawJfG8Dsy, Registration: jk01p8676
+2025-11-07 20:56:51 - INFO - root - Vehicle RHfdbacQzJvawJfG8Dsy released from Firestore queue
+2025-11-07 20:56:51 - INFO - root - Updated ranks after removing vehicle at rank 1
+2025-11-07 20:56:51 - INFO - root - Preparing to send FCM notifications to active devices
+2025-11-07 20:56:51 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929733, tzinfo=datetime.timezone.utc), 'username': 'shahzada@gmail.com', 'deviceId': 'device_1759853941925_s0fzvrt9l', 'fcmToken': 'ftplsyEBTeeKQRFozKQUkC:APA91bHXXnEBMpt1Ez-ASWhcYTWCdMb2wn84AgvCraefTV-wwMl0EE4b7RWv8DCjEB_Zy3wOtigB8gbi6c4JDvgrdcpC2NFLGce36jDOjkTxz8GfkWn5tSA', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 14, 8, 20, 929729, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:56:51 - INFO - root - Device data fetched: {'isActive': True, 'registeredAt': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855834, tzinfo=datetime.timezone.utc), 'username': 'anonymous', 'deviceId': 'device_1760334314263_jygqdbw7g', 'fcmToken': 'dNUVrEI9SAKF4dWHOvbil1:APA91bEOX5GJvtdgZozj5pAhvptuuaLjjQSBSpI3RCSym4Yz8gX6EIdw89hnge6VNvpk1PLu5PcKSB96tt1bH0zxT20Nv9egaGnB2vAMgpX3y1x6dogtHZk', 'lastSeen': DatetimeWithNanoseconds(2025, 11, 7, 5, 55, 41, 855829, tzinfo=datetime.timezone.utc)}
+2025-11-07 20:56:51 - INFO - root - Retrieved 2 active device tokens
+2025-11-07 20:56:51 - INFO - root - Attempting to send FCM notifications to 2 devices
+2025-11-07 20:56:52 - INFO - root - FCM response for token 1/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762529211435247%dcd566b9dcd566b9
+2025-11-07 20:56:52 - INFO - root - Successfully sent FCM to token 1/2: ftplsyEBTe...
+2025-11-07 20:56:52 - INFO - root - FCM response for token 2/2: projects/vehiclemanagementsystem-e76c4/messages/0:1762529211821154%dcd566b9dcd566b9
+2025-11-07 20:56:52 - INFO - root - Successfully sent FCM to token 2/2: dNUVrEI9SA...
+2025-11-07 20:56:52 - INFO - root - FCM notifications completed: 2 successful, 0 failed out of 2 total
+2025-11-07 20:56:52 - INFO - uvicorn.access - 127.0.0.1:57377 - "POST /v1/vehicle/check-out HTTP/1.1" 200
+2025-11-07 20:57:22 - INFO - uvicorn.error - Shutting down
+2025-11-07 20:57:22 - INFO - uvicorn.error - Waiting for connections to close. (CTRL+C to force quit)
+2025-11-07 20:57:28 - INFO - uvicorn.error - Finished server process [30996]
+2025-11-07 20:57:28 - ERROR - uvicorn.error - Traceback (most recent call last):
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 636, in run_until_complete
+    self.run_forever()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 603, in run_forever
+    self._run_once()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 1909, in _run_once
+    handle._run()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 70, in serve
+    with self.capture_signals():
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\contextlib.py", line 142, in __exit__
+    next(self.gen)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 331, in capture_signals
+    signal.raise_signal(captured_signal)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\starlette\routing.py", line 701, in lifespan
+    await receive()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\queues.py", line 159, in get
+    await getter
+asyncio.exceptions.CancelledError
+

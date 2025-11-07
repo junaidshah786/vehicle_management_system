@@ -5,7 +5,8 @@ from app.config.config import VEHICLE_QUEUE_COLLECTION
 from app.services.pydantic import RegisterDeviceRequest, TestFcmNotificationRequest, UnregisterDeviceRequest
 import traceback
 from app.services.firebase import db
-from fastapi import Query
+from fastapi import Query, Request
+from fastapi.responses import StreamingResponse
 from typing import Dict, List, Any
 from firebase_admin import messaging
 import asyncio
@@ -15,6 +16,35 @@ from app.services.vehicle_queue_utils import add_vehicle_to_queue_firestore, cle
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+subscribers = []  # Active SSE connections
+
+@router.get("/notifications/stream")
+async def notification_stream(request: Request):
+    """Stream real-time notifications to clients."""
+    async def event_generator():
+        # Add this connection to subscribers list
+        queue = asyncio.Queue()
+        subscribers.append(queue)
+        try:
+            while True:
+                # Disconnect check
+                if await request.is_disconnected():
+                    break
+                # Wait for new message
+                message = await queue.get()
+                yield f"data: {message}\n\n"
+        finally:
+            subscribers.remove(queue)
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+async def broadcast_notification(message: str):
+    """Send message to all active SSE subscribers"""
+    for queue in subscribers:
+        await queue.put(message)
+
 
 
 @router.get("/fetch_queue", response_model=Dict[str, Any])
@@ -413,6 +443,11 @@ async def check_in_vehicle(request: CheckInRequest):
             }
         )
 
+        await broadcast_notification(
+        f"🚗 Vehicle {registration_number} ({vehicle_type}) added to queue at position {next_rank}"
+        )
+
+
         return {
             "message": "Vehicle checked in successfully",
             "vehicleId": vehicle_id,
@@ -493,6 +528,10 @@ async def check_out_vehicle(request: CheckOutRequest):
                 "previous_rank": str(current_rank)
             }
         )
+        await broadcast_notification(
+        f"🚗 Vehicle {registration_number} ({vehicle_type}) Released from Queue."
+        )
+
 
         return {
             "message": "Vehicle checked out successfully",
