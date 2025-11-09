@@ -5,7 +5,7 @@ from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
 from app.services.firebase import db
 from app.services.firestore_utils import delete_vehicle, fetch_registered_vehicle_summary, fetch_vehicle_data, update_vehicle
-from app.services.pdf_generator import generate_vehicle_icard_pdf
+from app.services.pdf_generator import generate_vehicle_icard_pdf, generate_vehicle_sticker_pdf
 from app.services.pydantic import VehicleRegistration, VehicleUpdateRequest
 from fastapi import Query
 from typing import Optional
@@ -95,6 +95,20 @@ def download_icard(vehicle_id: str):
     return StreamingResponse(pdf_buffer, media_type="application/pdf", headers={
         "Content-Disposition": f"attachment; filename=vehicle_icard_{vehicle_id}.pdf"
     })
+
+@router.get("/download-vehicle-sticker/{vehicle_id}")
+def download_vehicle_sticker(vehicle_id: str):
+    """
+    Download a vehicle sticker with large QR code suitable for pasting on vehicle glass.
+    30% larger than I-Card format with simplified design.
+    """
+    vehicle = fetch_vehicle_data(vehicle_id)
+    pdf_buffer = generate_vehicle_sticker_pdf(vehicle_id, vehicle)
+
+    return StreamingResponse(pdf_buffer, media_type="application/pdf", headers={
+        "Content-Disposition": f"attachment; filename=vehicle_sticker_{vehicle_id}.pdf"
+    })
+
 
 # 4. Update Vehicle API
 @router.put("/vehicles/{vehicle_id}", summary="Edit a registered vehicle")

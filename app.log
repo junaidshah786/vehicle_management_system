@@ -253,3 +253,35 @@ Traceback (most recent call last):
     await getter
 asyncio.exceptions.CancelledError
 
+2025-11-09 16:14:55 - INFO - uvicorn.error - Started server process [23324]
+2025-11-09 16:14:55 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-09 16:14:55 - INFO - uvicorn.error - Application startup complete.
+2025-11-09 16:14:55 - INFO - uvicorn.access - 127.0.0.1:64451 - "GET /docs HTTP/1.1" 200
+2025-11-09 16:14:55 - INFO - uvicorn.access - 127.0.0.1:64451 - "GET /openapi.json HTTP/1.1" 200
+2025-11-09 16:15:10 - INFO - uvicorn.access - 127.0.0.1:51823 - "GET /v1/download-vehicle-sticker/RHfdbacQzJvawJfG8Dsy HTTP/1.1" 200
+2025-11-09 16:19:53 - INFO - uvicorn.error - Shutting down
+2025-11-09 16:19:54 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-09 16:19:54 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-09 16:19:54 - INFO - uvicorn.error - Finished server process [23324]
+2025-11-09 16:20:01 - INFO - uvicorn.error - Started server process [16708]
+2025-11-09 16:20:01 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-09 16:20:01 - INFO - uvicorn.error - Application startup complete.
+2025-11-09 16:20:10 - INFO - uvicorn.error - Shutting down
+2025-11-09 16:20:10 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-09 16:20:10 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-09 16:20:10 - INFO - uvicorn.error - Finished server process [16708]
+2025-11-09 16:20:11 - INFO - uvicorn.error - Started server process [12000]
+2025-11-09 16:20:11 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-09 16:20:11 - INFO - uvicorn.error - Application startup complete.
+2025-11-09 16:20:14 - INFO - uvicorn.error - Shutting down
+2025-11-09 16:20:14 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-09 16:20:14 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-09 16:20:14 - INFO - uvicorn.error - Finished server process [12000]
+2025-11-09 16:20:16 - INFO - uvicorn.error - Started server process [3912]
+2025-11-09 16:20:16 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-09 16:20:16 - INFO - uvicorn.error - Application startup complete.
+2025-11-09 16:20:21 - INFO - uvicorn.access - 127.0.0.1:50701 - "GET /v1/download-vehicle-sticker/RHfdbacQzJvawJfG8Dsy HTTP/1.1" 200
+2025-11-09 16:22:57 - INFO - uvicorn.error - Shutting down
+2025-11-09 16:22:57 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-09 16:22:57 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-09 16:22:57 - INFO - uvicorn.error - Finished server process [3912]

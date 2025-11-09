@@ -129,5 +129,109 @@ def generate_vehicle_icard_pdf(vehicle_id: str, vehicle: dict, logo_path: str = 
         raise RuntimeError("Failed to generate vehicle I-Card PDF") from e
 
 
+def generate_vehicle_sticker_pdf(vehicle_id: str, vehicle: dict, logo_path: str = "E:/workspace/poc/vehicle_management_system/app/image utils/i_card_logo.png") -> BytesIO:
+    try:
+        # Generate QR code
+        qr_data = f"{vehicle_id}__{vehicle.get('registrationNumber', 'N/A')}__{vehicle.get('vehicleType', 'N/A')}"
+        qr = qrcode.make(qr_data).convert("RGB")
+
+        # PDF setup
+        pdf_buffer = BytesIO()
+        c = canvas.Canvas(pdf_buffer, pagesize=A4)
+        page_width, page_height = A4
+
+        # Sticker dimensions (30% larger than I-Card)
+        sticker_width = 4.55 * inch  # 3.5 * 1.3
+        sticker_height = 7.15 * inch  # 5.5 * 1.3
+        sticker_x = (page_width - sticker_width) / 2
+        sticker_y = (page_height - sticker_height) / 2
+
+        # Gradient Background Effect (using overlapping rectangles)
+        c.setFillColorRGB(0.15, 0.35, 0.75)  # Deep blue
+        c.roundRect(sticker_x, sticker_y, sticker_width, sticker_height, radius=20, stroke=0, fill=1)
+        
+        # Add lighter blue overlay for gradient effect
+        c.setFillColorRGB(0.25, 0.45, 0.85)  # Lighter blue without transparency
+        c.roundRect(sticker_x, sticker_y + sticker_height * 0.3, sticker_width, sticker_height * 0.7, radius=20, stroke=0, fill=1)
+
+        # Decorative border
+        c.setStrokeColorRGB(1, 1, 1)  # White border
+        c.setLineWidth(3)
+        c.roundRect(sticker_x + 10, sticker_y + 10, sticker_width - 20, sticker_height - 20, radius=15, stroke=1, fill=0)
+
+        # Logo at top
+        if os.path.exists(logo_path):
+            logo = Image.open(logo_path).convert("RGBA")
+            logo_reader = ImageReader(logo)
+            logo_w, logo_h = 95, 95  # Increased by 30%
+            logo_x = sticker_x + (sticker_width - logo_w) / 2
+            logo_y = sticker_y + sticker_height - logo_h - 35
+            c.drawImage(logo_reader, logo_x, logo_y, width=logo_w, height=logo_h, mask='auto')
+            qr_top_y = logo_y - 25
+        else:
+            qr_top_y = sticker_y + sticker_height - 130
+
+        # Title
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColorRGB(1, 1, 1)  # White text
+        c.drawCentredString(sticker_x + sticker_width / 2, qr_top_y, "RaahSair Verified")
+
+        # QR Code (Larger size) - Shifted up
+        qr_size = 220  # Significantly larger
+        qr_x = sticker_x + (sticker_width - qr_size) / 2
+        qr_y = qr_top_y - qr_size - 15  # Reduced from 25 to 15
+        
+        # White background for QR code
+        c.setFillColorRGB(1, 1, 1)
+        c.roundRect(qr_x - 12, qr_y - 12, qr_size + 24, qr_size + 24, radius=15, stroke=0, fill=1)
+        
+        c.drawInlineImage(qr, qr_x, qr_y, width=qr_size, height=qr_size)
+
+        # "Scan Me" text under QR code - Shifted up
+        scan_y = qr_y - 40
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColorRGB(1, 0.95, 0.3)  # Bright yellow
+        c.drawCentredString(sticker_x + sticker_width / 2, scan_y, "SCAN ME")
+
+        # Registration Number (larger and prominent with more spacing) - Shifted up
+        reg_y = scan_y - 55
+        c.setFont("Helvetica-Bold", 14)
+        c.setFillColorRGB(1, 1, 1)
+        c.drawCentredString(sticker_x + sticker_width / 2, reg_y, "Registration No.")
+        
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColorRGB(1, 0.95, 0.3)  # Yellow for registration number
+        registration_number = vehicle.get('registrationNumber', 'N/A')
+        c.drawCentredString(sticker_x + sticker_width / 2, reg_y - 28, registration_number)
+
+        # Vehicle Shift (if available with more spacing) - Shifted up
+        shift_y = reg_y - 65
+        vehicle_shift = vehicle.get('vehicleShift', '')
+        if vehicle_shift:
+            c.setFont("Helvetica-Bold", 13)
+            c.setFillColorRGB(1, 1, 1)
+            c.drawCentredString(sticker_x + sticker_width / 2, shift_y, f"Shift: {vehicle_shift}")
+
+        # Decorative wave pattern at bottom
+        c.setStrokeColorRGB(1, 1, 1)  # White without transparency
+        c.setLineWidth(2)
+        wave_y = sticker_y + 50
+        for i in range(5):
+            c.line(sticker_x + 20, wave_y + (i * 8), sticker_x + sticker_width - 20, wave_y + (i * 8))
+
+        # Footer
+        c.setFont("Helvetica-Bold", 11)
+        c.setFillColorRGB(1, 1, 1)  # White without transparency
+        c.drawCentredString(sticker_x + sticker_width / 2, sticker_y + 25, "Official Vehicle Verification")
+
+        # Finalize
+        c.save()
+        pdf_buffer.seek(0)
+        return pdf_buffer
+    
+    except Exception as e:
+        logging.error(f"Error generating vehicle sticker PDF: {e}")
+        raise RuntimeError("Failed to generate vehicle sticker PDF") from e
+
 
 

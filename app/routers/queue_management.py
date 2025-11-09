@@ -443,8 +443,15 @@ async def check_in_vehicle(request: CheckInRequest):
             }
         )
 
-        await broadcast_notification(
-        f"🚗 Vehicle {registration_number} ({vehicle_type}) added to queue at position {next_rank}"
+        await broadcast_notification({"action": "add",
+                                      "vehicle":{
+            "message": "Vehicle checked in successfully",
+            "vehicleId": vehicle_id,
+            "queueRank": next_rank,
+            "vehicleType": vehicle_type,
+            "vehicleShift": vehicle_shift,  
+            "registrationNumber": registration_number
+        } }
         )
 
 
@@ -528,8 +535,15 @@ async def check_out_vehicle(request: CheckOutRequest):
                 "previous_rank": str(current_rank)
             }
         )
-        await broadcast_notification(
-        f"🚗 Vehicle {registration_number} ({vehicle_type}) Released from Queue."
+        await broadcast_notification({"action": "remove",
+                                      "vehicle":{
+            "message": "Vehicle checked out successfully",
+            "vehicleId": vehicle_id,
+            "vehicleType": vehicle_type,
+            "vehicleShift": vehicle_shift,
+            "registrationNumber": registration_number,
+            "previousQueueRank": current_rank
+        } }
         )
 
 
