@@ -159,27 +159,16 @@ def generate_vehicle_sticker_pdf(vehicle_id: str, vehicle: dict, logo_path: str 
         c.setLineWidth(3)
         c.roundRect(sticker_x + 10, sticker_y + 10, sticker_width - 20, sticker_height - 20, radius=15, stroke=1, fill=0)
 
-        # Logo at top
-        if os.path.exists(logo_path):
-            logo = Image.open(logo_path).convert("RGBA")
-            logo_reader = ImageReader(logo)
-            logo_w, logo_h = 95, 95  # Increased by 30%
-            logo_x = sticker_x + (sticker_width - logo_w) / 2
-            logo_y = sticker_y + sticker_height - logo_h - 35
-            c.drawImage(logo_reader, logo_x, logo_y, width=logo_w, height=logo_h, mask='auto')
-            qr_top_y = logo_y - 25
-        else:
-            qr_top_y = sticker_y + sticker_height - 130
-
-        # Title
-        c.setFont("Helvetica-Bold", 18)
+        # Title at top (no logo)
+        title_y = sticker_y + sticker_height - 50
+        c.setFont("Helvetica-Bold", 20)
         c.setFillColorRGB(1, 1, 1)  # White text
-        c.drawCentredString(sticker_x + sticker_width / 2, qr_top_y, "RaahSair Verified")
+        c.drawCentredString(sticker_x + sticker_width / 2, title_y, "RaahSair Verified")
 
-        # QR Code (Larger size) - Shifted up
-        qr_size = 220  # Significantly larger
+        # QR Code (Larger size) - Better positioned
+        qr_size = 220
         qr_x = sticker_x + (sticker_width - qr_size) / 2
-        qr_y = qr_top_y - qr_size - 15  # Reduced from 25 to 15
+        qr_y = title_y - qr_size - 30
         
         # White background for QR code
         c.setFillColorRGB(1, 1, 1)
@@ -187,42 +176,49 @@ def generate_vehicle_sticker_pdf(vehicle_id: str, vehicle: dict, logo_path: str 
         
         c.drawInlineImage(qr, qr_x, qr_y, width=qr_size, height=qr_size)
 
-        # "Scan Me" text under QR code - Shifted up
-        scan_y = qr_y - 40
-        c.setFont("Helvetica-Bold", 22)
+        # "Scan Me" text under QR code - with good spacing
+        scan_y = qr_y - 45
+        c.setFont("Helvetica-Bold", 24)
         c.setFillColorRGB(1, 0.95, 0.3)  # Bright yellow
         c.drawCentredString(sticker_x + sticker_width / 2, scan_y, "SCAN ME")
 
-        # Registration Number (larger and prominent with more spacing) - Shifted up
-        reg_y = scan_y - 55
-        c.setFont("Helvetica-Bold", 14)
-        c.setFillColorRGB(1, 1, 1)
-        c.drawCentredString(sticker_x + sticker_width / 2, reg_y, "Registration No.")
+        # Registration Number Section - Enhanced design with box
+        reg_section_y = scan_y - 75
+        box_width = sticker_width - 80
+        box_height = 85
+        box_x = sticker_x + 40
+        box_y = reg_section_y - 65  # Adjusted for equal vertical spacing
         
-        c.setFont("Helvetica-Bold", 18)
-        c.setFillColorRGB(1, 0.95, 0.3)  # Yellow for registration number
-        registration_number = vehicle.get('registrationNumber', 'N/A')
-        c.drawCentredString(sticker_x + sticker_width / 2, reg_y - 28, registration_number)
+        # Rounded box background for registration info
+        c.setFillColorRGB(1, 1, 1)  # Solid white with reduced opacity
+        c.setFillColorRGB(0.2, 0.5, 0.9)  # Solid blue background
+        c.roundRect(box_x, box_y, box_width, box_height, radius=12, stroke=0, fill=1)
+        
+        # Decorative border for the box
+        c.setStrokeColorRGB(1, 0.95, 0.3)  # Yellow border
+        c.setLineWidth(2.5)
+        c.roundRect(box_x, box_y, box_width, box_height, radius=12, stroke=1, fill=0)
+        
+        # Calculate center point of the box for equal spacing
+        box_center_y = box_y + (box_height / 2)
+        
+        # Registration Number - centered in box
+        c.setFont("Helvetica", 11)
+        c.setFillColorRGB(1, 1, 1)  # White text
+        c.drawCentredString(sticker_x + sticker_width / 2, box_center_y + 20, "VEHICLE REG. NO.")
+        
+        c.setFont("Helvetica-Bold", 26)
+        c.setFillColorRGB(1, 0.95, 0.3)  # Bright yellow
+        registration_number = vehicle.get('registrationNumber', 'N/A').upper()
+        c.drawCentredString(sticker_x + sticker_width / 2, box_center_y - 10, registration_number)
 
-        # Vehicle Shift (if available with more spacing) - Shifted up
-        shift_y = reg_y - 65
+        # Vehicle Shift with icon-like design - centered in box
         vehicle_shift = vehicle.get('vehicleShift', '')
         if vehicle_shift:
             c.setFont("Helvetica-Bold", 13)
             c.setFillColorRGB(1, 1, 1)
-            c.drawCentredString(sticker_x + sticker_width / 2, shift_y, f"Shift: {vehicle_shift}")
-
-        # Decorative wave pattern at bottom
-        c.setStrokeColorRGB(1, 1, 1)  # White without transparency
-        c.setLineWidth(2)
-        wave_y = sticker_y + 50
-        for i in range(5):
-            c.line(sticker_x + 20, wave_y + (i * 8), sticker_x + sticker_width - 20, wave_y + (i * 8))
-
-        # Footer
-        c.setFont("Helvetica-Bold", 11)
-        c.setFillColorRGB(1, 1, 1)  # White without transparency
-        c.drawCentredString(sticker_x + sticker_width / 2, sticker_y + 25, "Official Vehicle Verification")
+            shift_text = f"● {vehicle_shift.upper()} SHIFT"
+            c.drawCentredString(sticker_x + sticker_width / 2, box_center_y - 35, shift_text)
 
         # Finalize
         c.save()
@@ -232,6 +228,5 @@ def generate_vehicle_sticker_pdf(vehicle_id: str, vehicle: dict, logo_path: str 
     except Exception as e:
         logging.error(f"Error generating vehicle sticker PDF: {e}")
         raise RuntimeError("Failed to generate vehicle sticker PDF") from e
-
 
 
