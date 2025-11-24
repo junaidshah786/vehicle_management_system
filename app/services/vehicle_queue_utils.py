@@ -1,4 +1,5 @@
 import logging
+import traceback
 from app.config.config import QUEUE_HISTORY_COLLECTION, VEHICLE_QUEUE_COLLECTION, VEHICLES_COLLECTION
 from firebase_admin import firestore
 from datetime import datetime
@@ -186,6 +187,7 @@ async def get_vehicle_details_firestore(vehicle_id: str) -> Optional[Dict]:
         return None
 
 async def add_vehicle_to_queue_firestore(vehicle_id: str, registration_number: str, vehicle_type: str, driver_name: str, vehicle_shift:str) -> int:
+    
     """Add vehicle to Firestore queue - DIRECT WRITE (triggers Cloud Function)"""
     try:
         # Get next rank
@@ -255,7 +257,7 @@ async def get_next_queue_rank(vehicle_type: str, vehicle_shift: str) -> int:
         
     except Exception as e:
         logging.error(f"Error getting next queue rank: {e}")
-        return 1
+        raise Exception("Failed to get next queue rank")
 
 
 async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
@@ -282,48 +284,233 @@ async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str)
     except Exception as e:
         logging.error(f"Error updating queue ranks: {e}")
 
-# async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str):
-#     """Log queue history to Firestore"""
+
+# async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str, checkin_time: datetime = None, checkout_time: datetime = None):
+#     """Log queue history to Firestore with check-in and check-out times"""
 #     try:
+#         # Fetch vehicleShift from vehicle details
+#         vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
+#         vehicle_shift = None
+#         if vehicle_details.exists:
+#             vehicle_shift = vehicle_details.to_dict().get("vehicleShift")
 #         history_data = {
 #             "vehicle_id": vehicle_id,
 #             "action": action,
 #             "queue_rank": rank,
 #             "vehicle_type": vehicle_type,
+#             "vehicleShift": vehicle_shift,  # <-- Added
 #             "username": user,
-#             "timestamp": datetime.utcnow()
+#             "timestamp": datetime.utcnow(),
+#             "checkin_time": checkin_time,
+#             "checkout_time": checkout_time
 #         }
-        
 #         db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
-        
 #     except Exception as e:
 #         logging.error(f"Error logging queue history: {e}")
 
 
-
-async def log_queue_history_firestore(vehicle_id: str, action: str, rank: int, vehicle_type: str, user: str, checkin_time: datetime = None, checkout_time: datetime = None):
-    """Log queue history to Firestore with check-in and check-out times"""
+async def log_queue_history_firestore(
+    vehicle_id: str, 
+    action: str, 
+    rank: int, 
+    vehicle_type: str, 
+    user: str, 
+    checkin_time: datetime = None, 
+    checkout_time: datetime = None,
+    released_time: datetime = None
+):
+    """
+    Log queue history to Firestore with complete lifecycle tracking
+    
+    Args:
+        vehicle_id: Unique identifier for the vehicle
+        action: Action type - 'checked_in', 'released', 'checked_out', 'added', 'removed'
+        rank: Queue rank at the time of action
+        vehicle_type: Type of vehicle
+        user: Username performing the action
+        checkin_time: When vehicle was added to queue
+        checkout_time: When vehicle completed the entire cycle
+        released_time: When vehicle was released from queue for trip
+    """
     try:
         # Fetch vehicleShift from vehicle details
         vehicle_details = db.collection("vehicleDetails").document(vehicle_id).get()
         vehicle_shift = None
+        registration_number = None
+        
         if vehicle_details.exists:
-            vehicle_shift = vehicle_details.to_dict().get("vehicleShift")
+            vehicle_data = vehicle_details.to_dict()
+            vehicle_shift = vehicle_data.get("vehicleShift")
+            registration_number = vehicle_data.get("registrationNumber")
+        
+        # Helper function to normalize datetime (remove timezone info)
+        def normalize_datetime(dt):
+            """Convert datetime to naive UTC datetime"""
+            if dt is None:
+                return None
+            if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
+                # Convert to UTC and remove timezone info
+                return dt.replace(tzinfo=None)
+            return dt
+        
+        # Normalize all datetime objects
+        checkin_time = normalize_datetime(checkin_time)
+        released_time = normalize_datetime(released_time)
+        checkout_time = normalize_datetime(checkout_time)
+        
+        # Calculate durations if applicable
+        queue_duration = None
+        trip_duration = None
+        total_duration = None
+        
+        if checkin_time and released_time:
+            queue_duration = (released_time - checkin_time).total_seconds()
+        
+        if released_time and checkout_time:
+            trip_duration = (checkout_time - released_time).total_seconds()
+        
+        if checkin_time and checkout_time:
+            total_duration = (checkout_time - checkin_time).total_seconds()
+        
         history_data = {
             "vehicle_id": vehicle_id,
+            "registration_number": registration_number,
             "action": action,
             "queue_rank": rank,
             "vehicle_type": vehicle_type,
-            "vehicleShift": vehicle_shift,  # <-- Added
+            "vehicleShift": vehicle_shift,
             "username": user,
             "timestamp": datetime.utcnow(),
+            
+            # Lifecycle timestamps
             "checkin_time": checkin_time,
-            "checkout_time": checkout_time
+            "released_time": released_time,
+            "checkout_time": checkout_time,
+            
+            # Durations (in seconds)
+            "queue_duration_seconds": queue_duration,
+            "trip_duration_seconds": trip_duration,
+            "total_duration_seconds": total_duration,
+            
+            # Status indicator
+            "status": get_status_from_action(action)
         }
+        
+        # Add to history collection
         db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
+        
+        logging.info(f"Queue history logged: {vehicle_id} - {action}")
+        
     except Exception as e:
-        logging.error(f"Error logging queue history: {e}")
+        logging.error(f"Error logging queue history for {vehicle_id}: {e}")
+        logging.error(f"Full traceback: {traceback.format_exc()}")
 
+
+def get_status_from_action(action: str) -> str:
+    """Map action to status for easier filtering"""
+    status_map = {
+        "checked_in": "in_queue",
+        "added": "in_queue",
+        "released": "on_trip",
+        "checked_out": "completed",
+        "removed": "removed"
+    }
+    return status_map.get(action, "unknown")
+
+
+async def get_vehicle_history(vehicle_id: str) -> List[Dict]:
+    """
+    Fetch complete history for a specific vehicle
+    
+    Returns list of history entries sorted by timestamp
+    """
+    try:
+        history_ref = db.collection(QUEUE_HISTORY_COLLECTION)
+        query = history_ref.where("vehicle_id", "==", vehicle_id).order_by("timestamp", direction="DESCENDING")
+        
+        docs = query.stream()
+        history = []
+        
+        for doc in docs:
+            entry = doc.to_dict()
+            entry["id"] = doc.id
+            history.append(entry)
+        
+        return history
+        
+    except Exception as e:
+        logging.error(f"Error fetching vehicle history: {e}")
+        return []
+
+
+async def get_trip_statistics(
+    start_date: datetime = None, 
+    end_date: datetime = None,
+    vehicle_type: str = None,
+    vehicle_shift: str = None
+) -> Dict:
+    """
+    Calculate trip statistics for reporting
+    
+    Args:
+        start_date: Filter from this date
+        end_date: Filter until this date
+        vehicle_type: Filter by vehicle type
+        vehicle_shift: Filter by vehicle shift
+    
+    Returns:
+        Dictionary with statistics
+    """
+    try:
+        history_ref = db.collection(QUEUE_HISTORY_COLLECTION)
+        query = history_ref.where("action", "==", "checked_out")
+        
+        if start_date:
+            query = query.where("checkin_time", ">=", start_date)
+        if end_date:
+            query = query.where("checkin_time", "<=", end_date)
+        if vehicle_type:
+            query = query.where("vehicle_type", "==", vehicle_type)
+        if vehicle_shift:
+            query = query.where("vehicleShift", "==", vehicle_shift)
+        
+        docs = query.stream()
+        
+        total_trips = 0
+        total_queue_time = 0
+        total_trip_time = 0
+        total_overall_time = 0
+        
+        for doc in docs:
+            data = doc.to_dict()
+            total_trips += 1
+            
+            if data.get("queue_duration_seconds"):
+                total_queue_time += data["queue_duration_seconds"]
+            if data.get("trip_duration_seconds"):
+                total_trip_time += data["trip_duration_seconds"]
+            if data.get("total_duration_seconds"):
+                total_overall_time += data["total_duration_seconds"]
+        
+        return {
+            "total_trips": total_trips,
+            "average_queue_time_minutes": (total_queue_time / total_trips / 60) if total_trips > 0 else 0,
+            "average_trip_time_minutes": (total_trip_time / total_trips / 60) if total_trips > 0 else 0,
+            "average_total_time_minutes": (total_overall_time / total_trips / 60) if total_trips > 0 else 0,
+            "total_queue_time_hours": total_queue_time / 3600,
+            "total_trip_time_hours": total_trip_time / 3600,
+            "filters": {
+                "start_date": start_date.isoformat() if start_date else None,
+                "end_date": end_date.isoformat() if end_date else None,
+                "vehicle_type": vehicle_type,
+                "vehicle_shift": vehicle_shift
+            }
+        }
+        
+    except Exception as e:
+        logging.error(f"Error calculating trip statistics: {e}")
+        return {"error": str(e)}
+    
 
 async def cleanup_invalid_tokens(invalid_tokens: List[str]):
     """Remove invalid FCM tokens from activeDevices collection"""
