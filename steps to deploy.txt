@@ -1,0 +1,11 @@
+to deploy: 
+nohup ./myenv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+
+> to check logs:
+tail -f app.log
+
+> to find process id:
+ps aux | grep uvicorn
+
+> to kill process:
+kill <PID>

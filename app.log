@@ -1,0 +1,186 @@
+2025-11-25 18:21:39 - INFO - uvicorn.error - Started server process [2964]
+2025-11-25 18:21:39 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-25 18:21:39 - INFO - uvicorn.error - Application startup complete.
+2025-11-25 18:21:39 - INFO - uvicorn.access - 127.0.0.1:59375 - "GET /docs HTTP/1.1" 200
+2025-11-25 18:21:39 - INFO - uvicorn.access - 127.0.0.1:59375 - "GET /openapi.json HTTP/1.1" 200
+2025-11-25 18:22:29 - INFO - uvicorn.access - 127.0.0.1:52178 - "GET /docs HTTP/1.1" 200
+2025-11-25 18:22:29 - INFO - uvicorn.access - 127.0.0.1:52178 - "GET /openapi.json HTTP/1.1" 200
+2025-11-25 19:32:15 - ERROR - root - Error in check_in_vehicle: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\routers\queue_management.py", line 311, in check_in_vehicle
+    vehicle_id, registration_number, vehicle_type = request.qr_data.split("__", 2)
+ValueError: not enough values to unpack (expected 3, got 2)
+
+2025-11-25 19:32:15 - INFO - uvicorn.access - 127.0.0.1:64414 - "POST /v1/vehicle/check-in HTTP/1.1" 500
+2025-11-25 19:32:23 - INFO - root - Check-in: Vehicle ID: K8F3x0NSljIFI47jhMW6
+2025-11-25 19:32:25 - INFO - root - Fetched vehicle data: {'registrationNumber': 'jk01z1111', 'seatingCapacity': 1, 'vehicleShift': 'morning', 'status': 'active', 'ownerPhone': '9589533002', 'ownerName': 'shakir', 'vehicleType': 'innova', 'createdAt': '2025-11-25T14:01:37.418672Z', 'updatedAt': '2025-11-25T14:01:37.418672Z', '_id': 'K8F3x0NSljIFI47jhMW6'}
+2025-11-25 19:32:25 - INFO - root - Vehicle K8F3x0NSljIFI47jhMW6 added to Firestore queue at rank 4
+2025-11-25 19:32:25 - INFO - root - Queue history logged: K8F3x0NSljIFI47jhMW6 - checked_in
+2025-11-25 19:32:25 - INFO - uvicorn.access - 127.0.0.1:65445 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-25 19:33:02 - INFO - root - Check-in: Vehicle ID: fKt2ysMIEXFxBPNeUZ7b
+2025-11-25 19:33:03 - INFO - root - Fetched vehicle data: {'registrationNumber': 'jk01x1111', 'seatingCapacity': 1, 'vehicleShift': 'morning', 'status': 'active', 'ownerPhone': '9589533002', 'ownerName': 'abdullah', 'vehicleType': 'innova', 'createdAt': '2025-11-25T14:02:43.044030Z', 'updatedAt': '2025-11-25T14:02:43.044030Z', '_id': 'fKt2ysMIEXFxBPNeUZ7b'}
+2025-11-25 19:33:03 - INFO - root - Vehicle fKt2ysMIEXFxBPNeUZ7b added to Firestore queue at rank 5
+2025-11-25 19:33:03 - INFO - root - Queue history logged: fKt2ysMIEXFxBPNeUZ7b - checked_in
+2025-11-25 19:33:03 - INFO - uvicorn.access - 127.0.0.1:53388 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-25 19:33:48 - INFO - root - Check-in: Vehicle ID: hXTreFg2Nd1sPrJHMoSN
+2025-11-25 19:33:48 - INFO - root - Fetched vehicle data: {'registrationNumber': 'jk01c1111', 'seatingCapacity': 1, 'vehicleShift': 'morning', 'status': 'active', 'ownerPhone': '9589533002', 'ownerName': 'sameer', 'vehicleType': 'innova', 'createdAt': '2025-11-25T14:03:25.197019Z', 'updatedAt': '2025-11-25T14:03:25.197019Z', '_id': 'hXTreFg2Nd1sPrJHMoSN'}
+2025-11-25 19:33:49 - INFO - root - Vehicle hXTreFg2Nd1sPrJHMoSN added to Firestore queue at rank 6
+2025-11-25 19:33:49 - INFO - root - Queue history logged: hXTreFg2Nd1sPrJHMoSN - checked_in
+2025-11-25 19:33:49 - INFO - uvicorn.access - 127.0.0.1:50393 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-25 19:34:27 - INFO - root - Check-in: Vehicle ID: imxHbaN6weBryF744ID8
+2025-11-25 19:34:27 - INFO - root - Fetched vehicle data: {'registrationNumber': 'jk01v1111', 'seatingCapacity': 1, 'vehicleShift': 'morning', 'status': 'active', 'ownerPhone': '9589533002', 'ownerName': 'irtiqa', 'vehicleType': 'innova', 'createdAt': '2025-11-25T14:04:06.794579Z', 'updatedAt': '2025-11-25T14:04:06.794579Z', '_id': 'imxHbaN6weBryF744ID8'}
+2025-11-25 19:34:27 - INFO - root - Vehicle imxHbaN6weBryF744ID8 added to Firestore queue at rank 7
+2025-11-25 19:34:28 - INFO - root - Queue history logged: imxHbaN6weBryF744ID8 - checked_in
+2025-11-25 19:34:28 - INFO - uvicorn.access - 127.0.0.1:61745 - "POST /v1/vehicle/check-in HTTP/1.1" 200
+2025-11-27 21:32:31 - INFO - uvicorn.error - Started server process [10904]
+2025-11-27 21:32:31 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-27 21:32:31 - INFO - uvicorn.error - Application startup complete.
+2025-11-27 21:32:31 - ERROR - uvicorn.error - Traceback (most recent call last):
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 636, in run_until_complete
+    self.run_forever()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 603, in run_forever
+    self._run_once()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\base_events.py", line 1909, in _run_once
+    handle._run()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 70, in serve
+    with self.capture_signals():
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\contextlib.py", line 142, in __exit__
+    next(self.gen)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\server.py", line 331, in capture_signals
+    signal.raise_signal(captured_signal)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\starlette\routing.py", line 701, in lifespan
+    await receive()
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+    return await self.receive_queue.get()
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.3056.0_x64__qbz5n2kfra8p0\lib\asyncio\queues.py", line 159, in get
+    await getter
+asyncio.exceptions.CancelledError
+
+2025-11-27 21:32:33 - INFO - uvicorn.error - Started server process [13212]
+2025-11-27 21:32:33 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-27 21:32:33 - INFO - uvicorn.error - Application startup complete.
+2025-11-27 21:32:33 - INFO - uvicorn.access - 127.0.0.1:63784 - "GET /docs HTTP/1.1" 200
+2025-11-27 21:32:34 - INFO - uvicorn.access - 127.0.0.1:63784 - "GET /openapi.json HTTP/1.1" 200
+2025-11-27 21:32:45 - INFO - uvicorn.access - 127.0.0.1:57083 - "GET /v1/fetch-vehicles?page=1&limit=10 HTTP/1.1" 200
+2025-11-28 11:06:09 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:06:09 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:06:09 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:06:09 - INFO - uvicorn.error - Finished server process [13212]
+2025-11-28 11:06:34 - INFO - uvicorn.error - Started server process [5792]
+2025-11-28 11:06:34 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:06:34 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:06:35 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:06:35 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:06:35 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:06:35 - INFO - uvicorn.error - Finished server process [5792]
+2025-11-28 11:06:37 - INFO - uvicorn.error - Started server process [2088]
+2025-11-28 11:06:37 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:06:37 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:07:56 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:07:56 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:07:56 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:07:56 - INFO - uvicorn.error - Finished server process [2088]
+2025-11-28 11:07:57 - INFO - uvicorn.error - Started server process [24352]
+2025-11-28 11:07:57 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:07:57 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:07:58 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:07:58 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:07:58 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:07:58 - INFO - uvicorn.error - Finished server process [24352]
+2025-11-28 11:07:59 - INFO - uvicorn.error - Started server process [9816]
+2025-11-28 11:07:59 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:07:59 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:08:00 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:08:00 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:08:00 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:08:00 - INFO - uvicorn.error - Finished server process [9816]
+2025-11-28 11:08:01 - INFO - uvicorn.error - Started server process [5316]
+2025-11-28 11:08:01 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:08:01 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:08:13 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:08:13 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:08:13 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:08:13 - INFO - uvicorn.error - Finished server process [5316]
+2025-11-28 11:08:14 - INFO - uvicorn.error - Started server process [22876]
+2025-11-28 11:08:14 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:08:14 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:08:19 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:08:19 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:08:19 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:08:19 - INFO - uvicorn.error - Finished server process [22876]
+2025-11-28 11:08:20 - INFO - uvicorn.error - Started server process [17948]
+2025-11-28 11:08:20 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:08:20 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:10:29 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:10:29 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:10:29 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:10:29 - INFO - uvicorn.error - Finished server process [17948]
+2025-11-28 11:10:51 - INFO - uvicorn.error - Started server process [6204]
+2025-11-28 11:10:51 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:10:51 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:15:29 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:15:29 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:15:29 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:15:29 - INFO - uvicorn.error - Finished server process [6204]
+2025-11-28 11:16:08 - INFO - uvicorn.error - Started server process [26540]
+2025-11-28 11:16:08 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:16:08 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:16:27 - INFO - uvicorn.access - 127.0.0.1:57418 - "GET /docs HTTP/1.1" 200
+2025-11-28 11:16:27 - INFO - uvicorn.access - 127.0.0.1:57418 - "GET /openapi.json HTTP/1.1" 200
+2025-11-28 11:16:36 - INFO - root - Check-in: Vehicle ID: K8F3x0NSljIFI47jhMW6
+2025-11-28 11:16:37 - INFO - uvicorn.access - 127.0.0.1:62232 - "POST /v1/vehicle/check-in HTTP/1.1" 409
+2025-11-28 11:16:50 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:16:51 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:16:51 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:16:51 - INFO - uvicorn.error - Finished server process [26540]
+2025-11-28 11:17:03 - INFO - uvicorn.error - Started server process [27452]
+2025-11-28 11:17:03 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:17:03 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:17:06 - INFO - uvicorn.error - Shutting down
+2025-11-28 11:17:06 - INFO - uvicorn.error - Waiting for application shutdown.
+2025-11-28 11:17:06 - INFO - uvicorn.error - Application shutdown complete.
+2025-11-28 11:17:06 - INFO - uvicorn.error - Finished server process [27452]
+2025-11-28 11:17:07 - INFO - uvicorn.error - Started server process [24816]
+2025-11-28 11:17:07 - INFO - uvicorn.error - Waiting for application startup.
+2025-11-28 11:17:07 - INFO - uvicorn.error - Application startup complete.
+2025-11-28 11:17:57 - INFO - root - Release: Vehicle ID: K8F3x0NSljIFI47jhMW6
+2025-11-28 11:17:58 - INFO - uvicorn.access - 127.0.0.1:54103 - "POST /v1/vehicle/release HTTP/1.1" 404
+2025-11-28 11:18:36 - INFO - root - Release: Vehicle ID: K8F3x0NSljIFI47jhMW6
+2025-11-28 11:18:36 - INFO - uvicorn.access - 127.0.0.1:51679 - "POST /v1/vehicle/release HTTP/1.1" 404
+2025-11-28 11:18:46 - INFO - root - Check-out: Vehicle ID: K8F3x0NSljIFI47jhMW6
+2025-11-28 11:18:47 - INFO - root - Vehicle K8F3x0NSljIFI47jhMW6 removed from active trips
+2025-11-28 11:18:47 - ERROR - root - Error logging queue history for K8F3x0NSljIFI47jhMW6: 'DatetimeWithNanoseconds' object has no attribute '_nanosecond'
+2025-11-28 11:18:47 - ERROR - root - Full traceback: Traceback (most recent call last):
+  File "E:\workspace\poc\vehicle_management_system\app\services\vehicle_queue_utils.py", line 400, in log_queue_history_firestore
+    db.collection(QUEUE_HISTORY_COLLECTION).add(history_data)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\collection.py", line 132, in add
+    write_result = document_ref.create(document_data, **kwargs)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\document.py", line 98, in create
+    batch, kwargs = self._prep_create(document_data, retry, timeout)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\base_document.py", line 205, in _prep_create
+    batch.create(self, document_data)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\base_batch.py", line 82, in create
+    write_pbs = _helpers.pbs_for_create(reference._document_path, document_data)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\_helpers.py", line 701, in pbs_for_create
+    create_pb = extractor.get_update_pb(document_path, exists=False)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\_helpers.py", line 593, in get_update_pb
+    name=document_path, fields=encode_dict(self.set_fields)
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\_helpers.py", line 240, in encode_dict
+    return {key: encode_value(value) for key, value in values_dict.items()}
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\_helpers.py", line 240, in <dictcomp>
+    return {key: encode_value(value) for key, value in values_dict.items()}
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\cloud\firestore_v1\_helpers.py", line 191, in encode_value
+    return document.Value(timestamp_value=value.timestamp_pb())
+  File "E:\workspace\poc\vehicle_management_system\myenv\lib\site-packages\google\api_core\datetime_helpers.py", line 273, in timestamp_pb
+    nanos = self._nanosecond or self.microsecond * 1000
+AttributeError: 'DatetimeWithNanoseconds' object has no attribute '_nanosecond'. Did you mean: 'nanosecond'?
+
+2025-11-28 11:18:47 - INFO - uvicorn.access - 127.0.0.1:59194 - "POST /v1/vehicle/check-out HTTP/1.1" 200

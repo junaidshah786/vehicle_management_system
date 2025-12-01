@@ -12,6 +12,7 @@ from firebase_admin import messaging
 import asyncio
 from pydantic import BaseModel
 import logging
+from typing import Optional
 from app.services.vehicle_queue_utils import (
     add_vehicle_to_queue_firestore, 
     cleanup_invalid_tokens, 
@@ -34,16 +35,16 @@ subscribers = []  # Active SSE connections
 # ============ REQUEST MODELS ============
 class CheckInRequest(BaseModel):
     qr_data: str
-    name: str
-    contact: str
+    name: Optional[str] = None
+    contact: Optional[str] = None
 
 class ReleaseRequest(BaseModel):
     qr_data: str
-    name: str
+    name: Optional[str] = None
 
 class CheckOutRequest(BaseModel):
     qr_data: str
-    name: str
+    name: Optional[str] = None
 
 # ============ HELPER FUNCTIONS ============
 async def get_active_trip(vehicle_id: str) -> Dict:
@@ -319,8 +320,12 @@ async def check_in_vehicle(request: CheckInRequest):
                 detail=f"Vehicle already in queue at position {existing_entry.get('queue_rank')}"
             )
         
+        # Dummy fallback values
+        name = request.name if request.name else "N/A"
+        contact = request.contact if request.contact else "N/A"
+
         # Check if vehicle is on an active trip
-        active_trip = await get_active_trip(vehicle_id)
+        active_trip = await get_active_trip(vehicle_id) 
         if active_trip:
             raise HTTPException(
                 status_code=409,
@@ -347,7 +352,7 @@ async def check_in_vehicle(request: CheckInRequest):
             vehicle_id, 
             registration_number, 
             vehicle_type, 
-            request.name, 
+            name, 
             vehicle_shift
         )
 
@@ -357,7 +362,7 @@ async def check_in_vehicle(request: CheckInRequest):
             "checked_in", 
             next_rank, 
             vehicle_type, 
-            request.name,
+            name,
             checkin_time=datetime.utcnow(),
             checkout_time=None
         )
