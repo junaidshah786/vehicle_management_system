@@ -107,7 +107,17 @@ async def notification_stream(request: Request):
         finally:
             subscribers.remove(queue)
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    # return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(
+    event_generator(),
+    media_type="text/event-stream",
+    headers={
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
+    }
+)
+
 
 async def broadcast_notification(message: str):
     """Send message to all active SSE subscribers"""
@@ -384,6 +394,7 @@ async def check_in_vehicle(request: CheckInRequest):
         await broadcast_notification({
             "action": "check_in",
             "vehicle": {
+                "message": "Vehicle checked in successfully",
                 "vehicleId": vehicle_id,
                 "queueRank": next_rank,
                 "vehicleType": vehicle_type,
@@ -472,6 +483,7 @@ async def release_vehicle(request: ReleaseRequest):
         await broadcast_notification({
             "action": "release",
             "vehicle": {
+                "message": "Vehicle released for trip",
                 "vehicleId": vehicle_id,
                 "vehicleType": vehicle_type,
                 "vehicleShift": vehicle_shift,
@@ -551,6 +563,7 @@ async def check_out_vehicle(request: CheckOutRequest):
         await broadcast_notification({
             "action": "check_out",
             "vehicle": {
+                "message": "Vehicle checked out successfully",
                 "vehicleId": vehicle_id,
                 "vehicleType": vehicle_type,
                 "vehicleShift": vehicle_shift,
