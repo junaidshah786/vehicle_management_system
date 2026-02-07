@@ -343,15 +343,18 @@ async def log_queue_history_firestore(
             vehicle_shift = vehicle_data.get("vehicleShift")
             registration_number = vehicle_data.get("registrationNumber")
         
-        # Helper function to normalize datetime (remove timezone info)
+        # Helper function to normalize datetime (handle DatetimeWithNanoseconds)
         def normalize_datetime(dt):
-            """Convert datetime to naive UTC datetime"""
+            """Convert to standard Python datetime to avoid Firestore issues"""
             if dt is None:
                 return None
-            if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
-                # Convert to UTC and remove timezone info
-                return dt.replace(tzinfo=None)
-            return dt
+            try:
+                # Create fresh datetime to avoid DatetimeWithNanoseconds issues
+                return datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, getattr(dt, 'microsecond', 0))
+            except Exception:
+                if hasattr(dt, 'tzinfo') and dt.tzinfo is not None:
+                    return dt.replace(tzinfo=None)
+                return dt
         
         # Normalize all datetime objects
         checkin_time = normalize_datetime(checkin_time)

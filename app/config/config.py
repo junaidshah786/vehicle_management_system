@@ -13,3 +13,11 @@ QUEUE_HISTORY_COLLECTION = "vehicleQueueHistory"
 ACTIVE_TRIPS_COLLECTION = "activeTrips"
 
 CLEAN_INACTIVE_SESSIONS_TIME = 15  # minutes
+
+# Plate Detection Settings
+YOLO_MODEL_PATH = "models/license-plate-finetune-v1s.pt"
+DETECTION_CONFIDENCE = 0.5      # YOLO detection confidence threshold
+OCR_CONFIDENCE_THRESHOLD = 0.6  # Minimum OCR confidence to accept plate
+MIN_PLATE_WIDTH = 60            # Minimum plate width in pixels
+MIN_PLATE_HEIGHT = 15           # Minimum plate height in pixels
+MAX_IMAGE_SIZE_MB = 10          # Maximum upload image size in MB
