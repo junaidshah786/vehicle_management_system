@@ -10,6 +10,9 @@ import cv2
 import numpy as np
 import logging
 import time
+import psutil
+import os
+import tracemalloc
 from typing import Optional, Tuple
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,6 +49,21 @@ class PlateDetectionResult:
     yolo_time_ms: float = 0.0
     ocr_time_ms: float = 0.0
     total_time_ms: float = 0.0
+
+
+def get_detailed_memory_usage() -> dict:
+    """Get detailed memory usage stats using psutil"""
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    virtual_mem = psutil.virtual_memory()
+    
+    return {
+        'process_rss_mb': mem_info.rss / (1024 * 1024),
+        'process_vms_mb': mem_info.vms / (1024 * 1024),
+        'system_available_mb': virtual_mem.available / (1024 * 1024),
+        'system_total_mb': virtual_mem.total / (1024 * 1024),
+        'system_percent_used': virtual_mem.percent
+    }
 
 
 class PlateDetectionService:
@@ -244,6 +262,10 @@ class PlateDetectionService:
         yolo_time_ms = 0.0
         ocr_time_ms = 0.0
         
+        # Start memory tracking
+        tracemalloc.start()
+        mem_before = get_detailed_memory_usage()
+        
         try:
             nparr = np.frombuffer(image_bytes, np.uint8)
             image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -295,7 +317,19 @@ class PlateDetectionService:
             
             total_time_ms = (time.perf_counter() - total_start) * 1000
             
-            logging.info(f"TIMING PROFILE | YOLO: {yolo_time_ms:.1f}ms | OCR: {ocr_time_ms:.1f}ms | Total: {total_time_ms:.1f}ms")
+            # Get memory stats
+            mem_after = get_detailed_memory_usage()
+            current_mem, peak_mem = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
+            
+            peak_delta_mb = peak_mem / (1024 * 1024)
+            process_mem_mb = mem_after['process_rss_mb']
+            available_mb = mem_after['system_available_mb']
+            
+            logging.info(
+                f"TIMING PROFILE | YOLO: {yolo_time_ms:.1f}ms | OCR: {ocr_time_ms:.1f}ms | Total: {total_time_ms:.1f}ms | "
+                f"RAM: {process_mem_mb:.1f}MB | Peak Delta: {peak_delta_mb:.1f}MB | Available: {available_mb:.0f}MB"
+            )
             
             if best_plate:
                 return PlateDetectionResult(
