@@ -116,17 +116,21 @@ def validate_image_size(file: UploadFile):
 
 async def detect_plate_from_upload(file: UploadFile) -> PlateDetectionResult:
     """Common plate detection logic for all endpoints."""
+    logger.info("Detecting plate...")
     validate_image_size(file)
-    
+    logger.info("Image size validated.")
     image_bytes = await file.read()
+    logger.info("Image read.")
     
     if len(image_bytes) > MAX_IMAGE_SIZE_MB * 1024 * 1024:
         raise HTTPException(
             status_code=400,
             detail=f"Image too large. Maximum size is {MAX_IMAGE_SIZE_MB}MB."
         )
+    logger.info("Image size validated.")
     
     result = plate_detection_service.detect_plate(image_bytes)
+    logger.info("Plate detected.")
     
     if not result.success:
         raise HTTPException(

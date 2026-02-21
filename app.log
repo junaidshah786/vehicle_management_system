@@ -1,0 +1,82 @@
+2026-02-21 11:57:48 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 11:57:48 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 11:57:48 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 11:57:48 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 11:57:48 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 11:57:49 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 242.9ms | OCR: 1144.4ms | Total: 1391.3ms | RAM Total: 417.4MB | Request Delta: +40.1MB | Available: 3603MB
+2026-02-21 11:57:49 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 11:57:50 - INFO - app.routers.plate_detection - DETECT-ONLY | YOLO: 242.9ms | OCR: 1144.4ms | DB: 941.1ms | Total: 2335.2ms | Plate: JK01BA3692
+2026-02-21 11:57:50 - INFO - uvicorn.access - 127.0.0.1:55284 - "POST /v1/vehicle/detect-plate HTTP/1.1" 200
+2026-02-21 11:58:41 - INFO - uvicorn.error - Shutting down
+2026-02-21 11:58:41 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-02-21 11:58:41 - INFO - uvicorn.error - Application shutdown complete.
+2026-02-21 11:58:41 - INFO - uvicorn.error - Finished server process [30576]
+2026-02-21 11:58:48 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-02-21 11:58:48 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-02-21 11:58:48 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-02-21 11:58:48 - INFO - root - STARTUP RAM | Process RSS: 380.0MB | Process VMS: 846.1MB | System Available: 3613MB / 16024MB | System Used: 77.5%
+2026-02-21 11:58:48 - INFO - uvicorn.error - Started server process [22632]
+2026-02-21 11:58:48 - INFO - uvicorn.error - Waiting for application startup.
+2026-02-21 11:58:48 - INFO - uvicorn.error - Application startup complete.
+2026-02-21 11:58:50 - INFO - uvicorn.error - Shutting down
+2026-02-21 11:58:50 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-02-21 11:58:50 - INFO - uvicorn.error - Application shutdown complete.
+2026-02-21 11:58:50 - INFO - uvicorn.error - Finished server process [22632]
+2026-02-21 11:58:54 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-02-21 11:58:54 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-02-21 11:58:54 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-02-21 11:58:54 - INFO - root - STARTUP RAM | Process RSS: 379.7MB | Process VMS: 846.2MB | System Available: 3910MB / 16024MB | System Used: 75.6%
+2026-02-21 11:58:54 - INFO - uvicorn.error - Started server process [32008]
+2026-02-21 11:58:54 - INFO - uvicorn.error - Waiting for application startup.
+2026-02-21 11:58:54 - INFO - uvicorn.error - Application startup complete.
+2026-02-21 13:13:47 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 13:13:47 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:13:47 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 13:13:47 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:13:47 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 13:13:47 - ERROR - app.services.plate_detection - OCR API execution error: HTTPSConnectionPool(host='ai.api.nvidia.com', port=443): Max retries exceeded with url: /v1/cv/baidu/paddleocr (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000024E5C8A4EE0>: Failed to resolve 'ai.api.nvidia.com' ([Errno 11001] getaddrinfo failed)"))
+2026-02-21 13:13:47 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 254.9ms | OCR: 6.9ms | Total: 265.6ms | RAM Total: 416.3MB | Request Delta: +39.8MB | Available: 3258MB
+2026-02-21 13:13:47 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 13:13:47 - INFO - uvicorn.access - 127.0.0.1:53127 - "POST /v1/vehicle/detect-plate HTTP/1.1" 400
+2026-02-21 13:14:00 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 13:14:00 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:14:00 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 13:14:00 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:14:00 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 13:14:00 - ERROR - app.services.plate_detection - OCR API execution error: HTTPSConnectionPool(host='ai.api.nvidia.com', port=443): Max retries exceeded with url: /v1/cv/baidu/paddleocr (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000024E5CA51660>: Failed to resolve 'ai.api.nvidia.com' ([Errno 11001] getaddrinfo failed)"))
+2026-02-21 13:14:00 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 59.9ms | OCR: 3.9ms | Total: 68.5ms | RAM Total: 419.2MB | Request Delta: +5.1MB | Available: 3292MB
+2026-02-21 13:14:00 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 13:14:00 - INFO - uvicorn.access - 127.0.0.1:53781 - "POST /v1/vehicle/detect-plate HTTP/1.1" 400
+2026-02-21 13:14:25 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 13:14:25 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:14:25 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 13:14:25 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:14:25 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 13:14:27 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 69.2ms | OCR: 2337.5ms | Total: 2410.6ms | RAM Total: 418.8MB | Request Delta: +1.7MB | Available: 2938MB
+2026-02-21 13:14:27 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 13:14:29 - INFO - app.routers.plate_detection - DETECT-ONLY | YOLO: 69.2ms | OCR: 2337.5ms | DB: 2048.1ms | Total: 4461.0ms | Plate: JK01BA3692
+2026-02-21 13:14:29 - INFO - uvicorn.access - 127.0.0.1:63435 - "POST /v1/vehicle/detect-plate HTTP/1.1" 200
+2026-02-21 13:15:06 - INFO - uvicorn.error - Shutting down
+2026-02-21 13:15:06 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-02-21 13:15:06 - INFO - uvicorn.error - Application shutdown complete.
+2026-02-21 13:15:06 - INFO - uvicorn.error - Finished server process [32008]
+2026-02-21 13:15:40 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-02-21 13:15:40 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-02-21 13:15:40 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-02-21 13:15:40 - INFO - root - STARTUP RAM | Process RSS: 380.4MB | Process VMS: 846.7MB | System Available: 3094MB / 16024MB | System Used: 80.7%
+2026-02-21 13:15:40 - INFO - uvicorn.error - Started server process [24812]
+2026-02-21 13:15:40 - INFO - uvicorn.error - Waiting for application startup.
+2026-02-21 13:15:40 - INFO - uvicorn.error - Application startup complete.
+2026-02-21 13:15:52 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 13:15:52 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:15:52 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 13:15:52 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:15:52 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 13:15:53 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 184.2ms | OCR: 506.7ms | Total: 694.6ms | RAM Total: 420.2MB | Request Delta: +42.5MB | Available: 3134MB
+2026-02-21 13:15:53 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 13:15:54 - INFO - app.routers.plate_detection - DETECT-ONLY | YOLO: 184.2ms | OCR: 506.7ms | DB: 855.9ms | Total: 1553.1ms | Plate: JK01BA3692
+2026-02-21 13:15:54 - INFO - uvicorn.access - 127.0.0.1:57115 - "POST /v1/vehicle/detect-plate HTTP/1.1" 200
+2026-02-21 13:20:07 - INFO - uvicorn.error - Shutting down
+2026-02-21 13:20:07 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-02-21 13:20:07 - INFO - uvicorn.error - Application shutdown complete.
+2026-02-21 13:20:07 - INFO - uvicorn.error - Finished server process [24812]
