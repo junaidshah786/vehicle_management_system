@@ -21,3 +21,4 @@ test.py
 nvidia_response.txt
 plate_detection copy.py
 profile_results.txt
+license-plate-finetune-v1s.onnx
