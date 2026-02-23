@@ -80,3 +80,23 @@
 2026-02-21 13:20:07 - INFO - uvicorn.error - Waiting for application shutdown.
 2026-02-21 13:20:07 - INFO - uvicorn.error - Application shutdown complete.
 2026-02-21 13:20:07 - INFO - uvicorn.error - Finished server process [24812]
+2026-02-21 13:52:47 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-02-21 13:52:47 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-02-21 13:52:47 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-02-21 13:52:47 - INFO - root - STARTUP RAM | Process RSS: 370.4MB | Process VMS: 839.1MB | System Available: 4494MB / 16024MB | System Used: 72.0%
+2026-02-21 13:52:47 - INFO - uvicorn.error - Started server process [31124]
+2026-02-21 13:52:47 - INFO - uvicorn.error - Waiting for application startup.
+2026-02-21 13:52:47 - INFO - uvicorn.error - Application startup complete.
+2026-02-21 13:52:49 - INFO - uvicorn.access - 127.0.0.1:61422 - "GET /docs HTTP/1.1" 200
+2026-02-21 13:52:49 - INFO - uvicorn.access - 127.0.0.1:61422 - "GET /openapi.json HTTP/1.1" 200
+2026-02-21 13:54:24 - INFO - app.routers.plate_detection - Detecting plate...
+2026-02-21 13:54:24 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:54:24 - INFO - app.routers.plate_detection - Image read.
+2026-02-21 13:54:24 - INFO - app.routers.plate_detection - Image size validated.
+2026-02-21 13:54:24 - INFO - app.services.plate_detection - Detecting plate...
+2026-02-21 13:54:26 - INFO - app.services.plate_detection - TIMING PROFILE | YOLO: 480.8ms | OCR: 1139.2ms | Total: 1627.2ms | RAM Total: 405.6MB | Request Delta: +34.4MB | Available: 4636MB
+2026-02-21 13:54:26 - INFO - app.routers.plate_detection - Plate detected.
+2026-02-21 13:54:26 - INFO - app.routers.plate_detection - DETECT-ONLY | YOLO: 480.8ms | OCR: 1139.2ms | DB: 809.8ms | Total: 2442.1ms | Plate: JK01BA3692
+2026-02-21 13:54:26 - INFO - uvicorn.access - 127.0.0.1:50311 - "POST /v1/vehicle/detect-plate HTTP/1.1" 200
+2026-02-21 13:54:40 - INFO - uvicorn.access - 127.0.0.1:51166 - "GET /v1/statistics/trips HTTP/1.1" 200
+2026-02-21 13:54:50 - INFO - uvicorn.access - 127.0.0.1:63506 - "GET /v1/queue?page=1&limit=10 HTTP/1.1" 200

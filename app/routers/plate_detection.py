@@ -24,6 +24,7 @@ from app.services.vehicle_queue_utils import (
     release_vehicle_from_queue_firestore,
     update_queue_ranks_after_removal
 )
+from app.routers.queue_management import broadcast_notification
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -266,6 +267,19 @@ async def check_in_via_plate(
             checkout_time=None
         )
         
+        # Broadcast SSE notification
+        await broadcast_notification({
+            "action": "check_in",
+            "vehicle": {
+                "message": "Vehicle checked in successfully",
+                "vehicleId": vehicle_id,
+                "queueRank": next_rank,
+                "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,
+                "registrationNumber": registration_number
+            }
+        })
+        
         total_time_ms = (time.perf_counter() - total_start) * 1000
         
         # LOG TIMING PROFILE (logs only)
@@ -368,6 +382,19 @@ async def release_via_plate(
             released_time=datetime.utcnow()
         )
         
+        # Broadcast SSE notification
+        await broadcast_notification({
+            "action": "release",
+            "vehicle": {
+                "message": "Vehicle released for trip",
+                "vehicleId": vehicle_id,
+                "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,
+                "registrationNumber": registration_number,
+                "previousQueueRank": current_rank
+            }
+        })
+        
         total_time_ms = (time.perf_counter() - total_start) * 1000
         
         # LOG TIMING PROFILE (logs only)
@@ -458,6 +485,18 @@ async def check_out_via_plate(
             checkout_time=datetime.utcnow(),
             released_time=released_at
         )
+        
+        # Broadcast SSE notification
+        await broadcast_notification({
+            "action": "check_out",
+            "vehicle": {
+                "message": "Vehicle checked out successfully",
+                "vehicleId": vehicle_id,
+                "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,
+                "registrationNumber": registration_number
+            }
+        })
         
         trip_duration = None
         if released_at:
