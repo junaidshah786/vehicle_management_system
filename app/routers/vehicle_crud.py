@@ -52,7 +52,7 @@ async def get_registered_vehicles(
 @router.post("/vehicles")
 def register_vehicle(data: VehicleRegistration):
     try:
-        vehicle_data = data.dict()
+        vehicle_data = data.dict(exclude_none=True)
         now = datetime.utcnow().isoformat() + "Z"
 
         # Check if a vehicle with the same registrationNumber already exists
