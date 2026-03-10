@@ -24,6 +24,9 @@ class VehicleTypeEnum(str, Enum):
     xylo = "xylo"
     scorpio = "scorpio"
     bolero = "bolero"
+    tempo = "tempo"
+    desire = "desire"
+    ertiga = "ertiga"
     other = "other"
 
 # Enum for vehicle shift
