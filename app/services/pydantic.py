@@ -39,7 +39,7 @@ class VehicleShiftEnum(str, Enum):
 class VehicleRegistration(BaseModel):
     registrationNumber: str = Field(..., min_length=6, max_length=15, description="e.g., JK01AB1234")
     vehicleType: VehicleTypeEnum
-    ownerName: Optional[str] = Field(None, min_length=3, max_length=50)
+    ownerName: Optional[str] = Field(None, max_length=50)
     ownerPhone: Optional[str] = Field(None, pattern=r"^\d{10}$")
     seatingCapacity: Optional[int] = Field(None, gt=0, lt=100)
     status: str = Field(default="active", pattern="^(active|inactive)$")
