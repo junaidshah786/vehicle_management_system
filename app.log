@@ -1,0 +1,4 @@
+2026-03-17 15:02:03 - INFO - uvicorn.error - Shutting down
+2026-03-17 15:02:03 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-03-17 15:02:03 - INFO - uvicorn.error - Application shutdown complete.
+2026-03-17 15:02:03 - INFO - uvicorn.error - Finished server process [22052]

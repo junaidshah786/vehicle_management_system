@@ -260,12 +260,13 @@ async def get_next_queue_rank(vehicle_type: str, vehicle_shift: str) -> int:
         raise Exception("Failed to get next queue rank")
 
 
-async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str):
+async def update_queue_ranks_after_removal(removed_rank: int, vehicle_type: str, vehicle_shift: str):
     """Update ranks of vehicles after one is removed - DIRECT FIRESTORE UPDATES (triggers Cloud Function)"""
     try:
         # Get all vehicles with higher ranks of same type
         query = db.collection(VEHICLE_QUEUE_COLLECTION)\
                .where("vehicle_type", "==", vehicle_type)\
+               .where("vehicleShift", "==", vehicle_shift)\
                .where("queue_rank", ">", removed_rank)
         
         docs = query.stream()

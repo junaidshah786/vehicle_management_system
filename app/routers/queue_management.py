@@ -46,6 +46,10 @@ class CheckOutRequest(BaseModel):
     qr_data: str
     name: Optional[str] = None
 
+class LeaveQueueRequest(BaseModel):
+    qr_data: str
+    name: Optional[str] = None
+
 # ============ HELPER FUNCTIONS ============
 async def get_active_trip(vehicle_id: str) -> Dict:
     """Get vehicle from active trips collection"""
@@ -452,7 +456,7 @@ async def release_vehicle(request: ReleaseRequest):
         await release_vehicle_from_queue_firestore(vehicle_id)
         
         # Update ranks of remaining vehicles
-        await update_queue_ranks_after_removal(current_rank, vehicle_type)
+        await update_queue_ranks_after_removal(current_rank, vehicle_type, vehicle_shift)
 
         # Log history
         await log_queue_history_firestore(
@@ -586,6 +590,70 @@ async def check_out_vehicle(request: CheckOutRequest):
         logging.error(f"Error in check_out_vehicle: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to check out vehicle: {str(e)}")
 
+# ============ LEAVE QUEUE API ============
+@router.post("/vehicle/leave-queue")
+async def leave_queue_api(request: LeaveQueueRequest):
+    """Leave queue before trip if necessary, remove from queue and shift ranks."""
+    try:
+        if "_" not in request.qr_data:
+            raise HTTPException(status_code=400, detail="Invalid QR format")
+        
+        vehicle_id, registration_number, vehicle_type = request.qr_data.split("__", 2)
+        logging.info(f"Leave Queue: Vehicle ID: {vehicle_id}")
+        
+        # Check if vehicle is in queue
+        existing_entry = await get_vehicle_from_queue(vehicle_id)
+        if not existing_entry:
+            raise HTTPException(status_code=404, detail="Vehicle not found in queue")
+
+        current_rank = existing_entry.get("queue_rank")
+        vehicle_type = existing_entry.get("vehicle_type")
+        vehicle_shift = existing_entry.get("vehicleShift")
+        
+        # Remove from queue
+        await release_vehicle_from_queue_firestore(vehicle_id)
+        
+        # Update ranks of remaining vehicles
+        await update_queue_ranks_after_removal(current_rank, vehicle_type, vehicle_shift)
+
+        # Log history
+        await log_queue_history_firestore(
+            vehicle_id, 
+            "removed", 
+            current_rank, 
+            vehicle_type, 
+            request.name or "N/A",
+            checkin_time=existing_entry.get("queued_at"),
+            checkout_time=datetime.utcnow()
+        )
+
+        await broadcast_notification({
+            "action": "leave_queue",
+            "vehicle": {
+                "message": "Vehicle removed from queue before trip",
+                "vehicleId": vehicle_id,
+                "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,
+                "registrationNumber": registration_number,
+                "previousQueueRank": current_rank
+            }
+        })
+
+        return {
+            "message": "Vehicle removed from queue successfully",
+            "vehicleId": vehicle_id,
+            "vehicleType": vehicle_type,
+            "vehicleShift": vehicle_shift,
+            "registrationNumber": registration_number,
+            "previousQueueRank": current_rank
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error in leave_queue_api: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to remove vehicle from queue: {str(e)}")
+
 # ============ DEVICE MANAGEMENT ============
 @router.post("/register-device")
 async def register_device(device_data: RegisterDeviceRequest):
@@ -667,9 +735,10 @@ async def remove_vehicle_from_queue(vehicle_id: str):
         vehicle_data = doc.to_dict()
         removed_rank = vehicle_data.get("queue_rank")
         vehicle_type = vehicle_data.get("vehicle_type")
+        vehicle_shift = vehicle_data.get("vehicleShift")
         
         doc_ref.delete()
-        await update_queue_ranks_after_removal(removed_rank, vehicle_type)
+        await update_queue_ranks_after_removal(removed_rank, vehicle_type, vehicle_shift)
         
         return {"message": f"Vehicle {vehicle_id} removed from queue"}
         

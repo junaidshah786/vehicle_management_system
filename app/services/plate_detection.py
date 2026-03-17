@@ -404,7 +404,8 @@ from app.config.config import (
     MIN_PLATE_WIDTH,
     MIN_PLATE_HEIGHT,
     NVIDIA_OCR_API_KEY,
-    NVIDIA_OCR_API_URL
+    NVIDIA_OCR_API_URL,
+    USE_YOLO_DETECTION
 )
 
 
@@ -468,13 +469,17 @@ class PlateDetectionService:
         """Load YOLO model (OCR is handled via NVIDIA API)"""
         logger.info("Loading plate detection models...")
         
-        # Load YOLO model
-        model_path = Path(YOLO_MODEL_PATH)
-        if not model_path.exists():
-            raise FileNotFoundError(f"YOLO model not found at: {YOLO_MODEL_PATH}")
+        # Load YOLO model only if enabled
+        if USE_YOLO_DETECTION:
+            model_path = Path(YOLO_MODEL_PATH)
+            if not model_path.exists():
+                raise FileNotFoundError(f"YOLO model not found at: {YOLO_MODEL_PATH}")
+            
+            PlateDetectionService._model = YOLO(str(model_path))
+            logger.info(f"YOLO model loaded from {YOLO_MODEL_PATH}")
+        else:
+            logger.info("YOLO detection is DISABLED via config. Treating incoming image as full plate crop.")
         
-        PlateDetectionService._model = YOLO(str(model_path))
-        logger.info(f"YOLO model loaded from {YOLO_MODEL_PATH}")
         logger.info("OCR configured to use NVIDIA API")
         
         # Log startup baseline RAM
@@ -648,42 +653,53 @@ class PlateDetectionService:
             
             image = self._resize_if_large(image)
             
-            yolo_start = time.perf_counter()
-            results = PlateDetectionService._model.predict(
-                image,
-                conf=DETECTION_CONFIDENCE,
-                verbose=False,
-                imgsz=YOLO_INPUT_SIZE
-            )
-            yolo_time_ms = (time.perf_counter() - yolo_start) * 1000
-            
             best_plate = None
             best_confidence = 0.0
             raw_texts = []
             
-            for result in results:
-                for box in result.boxes.xyxy:
-                    x1, y1, x2, y2 = map(int, box)
-                    
-                    width = x2 - x1
-                    height = y2 - y1
-                    if width < MIN_PLATE_WIDTH or height < MIN_PLATE_HEIGHT:
-                        continue
-                    
-                    plate_crop = image[max(0, y1):y2, max(0, x1):x2]
-                    if plate_crop.size == 0:
-                        continue
-                    
-                    text, confidence, plate_ocr_time = self._extract_text_from_crop(plate_crop)
-                    ocr_time_ms += plate_ocr_time
-                    
-                    if text:
-                        raw_texts.append(text)
+            if USE_YOLO_DETECTION:
+                yolo_start = time.perf_counter()
+                results = PlateDetectionService._model.predict(
+                    image,
+                    conf=DETECTION_CONFIDENCE,
+                    verbose=False,
+                    imgsz=YOLO_INPUT_SIZE
+                )
+                yolo_time_ms = (time.perf_counter() - yolo_start) * 1000
+                
+                for result in results:
+                    for box in result.boxes.xyxy:
+                        x1, y1, x2, y2 = map(int, box)
                         
-                        valid_plate = self.validate_indian_plate(text)
-                        if valid_plate and confidence > best_confidence:
-                            best_plate = valid_plate
-                            best_confidence = confidence
+                        width = x2 - x1
+                        height = y2 - y1
+                        if width < MIN_PLATE_WIDTH or height < MIN_PLATE_HEIGHT:
+                            continue
+                        
+                        plate_crop = image[max(0, y1):y2, max(0, x1):x2]
+                        if plate_crop.size == 0:
+                            continue
+                        
+                        text, confidence, plate_ocr_time = self._extract_text_from_crop(plate_crop)
+                        ocr_time_ms += plate_ocr_time
+                        
+                        if text:
+                            raw_texts.append(text)
+                            
+                            valid_plate = self.validate_indian_plate(text)
+                            if valid_plate and confidence > best_confidence:
+                                best_plate = valid_plate
+                                best_confidence = confidence
+            else:
+                # YOLO disabled - assume the entire image is the plate crop
+                text, confidence, plate_ocr_time = self._extract_text_from_crop(image)
+                ocr_time_ms += plate_ocr_time
+                if text:
+                    raw_texts.append(text)
+                    valid_plate = self.validate_indian_plate(text)
+                    if valid_plate and confidence > best_confidence:
+                        best_plate = valid_plate
+                        best_confidence = confidence
             
             total_time_ms = (time.perf_counter() - total_start) * 1000
             
