@@ -12,6 +12,7 @@ from firebase_admin import messaging
 import asyncio
 from pydantic import BaseModel
 import logging
+import json
 from typing import Optional
 from app.services.vehicle_queue_utils import (
     add_vehicle_to_queue_firestore, 
@@ -123,8 +124,10 @@ async def notification_stream(request: Request):
 )
 
 
-async def broadcast_notification(message: str):
+async def broadcast_notification(message: Any):
     """Send message to all active SSE subscribers"""
+    if isinstance(message, dict):
+        message = json.dumps(message, default=str)
     for queue in subscribers:
         await queue.put(message)
 
@@ -739,6 +742,18 @@ async def remove_vehicle_from_queue(vehicle_id: str):
         
         doc_ref.delete()
         await update_queue_ranks_after_removal(removed_rank, vehicle_type, vehicle_shift)
+        
+        await broadcast_notification({
+            "action": "admin_remove",
+            "vehicle": {
+                "message": "Vehicle removed from queue by admin",
+                "vehicleId": vehicle_id,
+                "vehicleType": vehicle_type,
+                "vehicleShift": vehicle_shift,
+                "registrationNumber": vehicle_data.get("registration_number"),
+                "previousQueueRank": removed_rank
+            }
+        })
         
         return {"message": f"Vehicle {vehicle_id} removed from queue"}
         
