@@ -1,0 +1,17 @@
+2026-04-01 11:46:06 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-04-01 11:46:06 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-04-01 11:46:06 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-04-01 11:46:06 - INFO - root - STARTUP RAM | Process RSS: 369.4MB | Process VMS: 837.8MB | System Available: 2487MB / 16024MB | System Used: 84.5%
+2026-04-01 11:46:06 - INFO - uvicorn.error - Started server process [32932]
+2026-04-01 11:46:06 - INFO - uvicorn.error - Waiting for application startup.
+2026-04-01 11:46:06 - INFO - uvicorn.error - Application startup complete.
+2026-04-01 11:46:27 - INFO - uvicorn.access - 127.0.0.1:65179 - "GET /docs HTTP/1.1" 200
+2026-04-01 11:46:28 - INFO - uvicorn.access - 127.0.0.1:65179 - "GET /openapi.json HTTP/1.1" 200
+2026-04-01 11:46:44 - INFO - uvicorn.access - 127.0.0.1:56129 - "GET /v1/fetch_queue?vehicle_type=innova&page=1&limit=10 HTTP/1.1" 200
+2026-04-01 11:46:51 - INFO - uvicorn.access - 127.0.0.1:58218 - "GET /v1/fetch_queue?vehicle_type=desire&page=1&limit=10 HTTP/1.1" 200
+2026-04-01 11:49:24 - INFO - uvicorn.access - 127.0.0.1:54658 - "GET /v1/fetch_queue?vehicle_type=desire&page=1&limit=10 HTTP/1.1" 200
+2026-04-01 11:49:38 - INFO - uvicorn.access - 127.0.0.1:51588 - "GET /v1/fetch_queue?vehicle_type=desires&page=1&limit=10 HTTP/1.1" 200
+2026-04-01 11:49:44 - INFO - uvicorn.error - Shutting down
+2026-04-01 11:49:44 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-04-01 11:49:44 - INFO - uvicorn.error - Application shutdown complete.
+2026-04-01 11:49:44 - INFO - uvicorn.error - Finished server process [32932]

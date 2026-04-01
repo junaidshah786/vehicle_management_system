@@ -20,14 +20,11 @@ class LoginRequest(BaseModel):
 class VehicleTypeEnum(str, Enum):
     innova = "innova"
     tavera = "tavera"
-    sumo = "sumo"
-    xylo = "xylo"
-    scorpio = "scorpio"
-    bolero = "bolero"
     tempo = "tempo"
-    desire = "desire"
-    ertiga = "ertiga"
-    other = "other"
+    glanza_etios = "glanza/etios"
+    ertiga_xylo_rumion = "ertiga/xylo/rumion"
+    extra_1 = "extra-1"
+    extra_2 = "extra-2"
 
 # Enum for vehicle shift
 class VehicleShiftEnum(str, Enum):
