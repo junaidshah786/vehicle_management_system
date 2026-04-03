@@ -12,14 +12,25 @@ logger = logging.getLogger(__name__)
 
 
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import authentication, queue_management, reporting, vehicle_crud, plate_detection
+from app.services.plate_cache import plate_cache
+from app.services.firebase import db
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: initialize plate cache with Firestore listener
+    logger.info("Starting plate cache Firestore listener...")
+    plate_cache.start_listener(db)
+    yield
+    # Shutdown: clean up listener
+    plate_cache.stop_listener()
 
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

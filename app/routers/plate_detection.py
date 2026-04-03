@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from app.config.config import MAX_IMAGE_SIZE_MB, ACTIVE_TRIPS_COLLECTION
 from app.services.plate_detection import plate_detection_service, PlateDetectionResult
 from app.services.firebase import db
+from app.services.plate_cache import plate_cache
 from app.services.vehicle_queue_utils import (
     add_vehicle_to_queue_firestore,
     get_vehicle_details_firestore,
@@ -32,19 +33,23 @@ logger = logging.getLogger(__name__)
 
 # ============ HELPER FUNCTIONS ============
 
-async def get_vehicle_by_registration(registration_number: str) -> Optional[dict]:
-    """Find vehicle by registration number (adapter function)."""
+async def get_vehicle_by_registration(registration_number: str, use_fuzzy: bool = False) -> tuple:
+    """
+    Find vehicle by registration number.
+    Returns (vehicle_dict, fuzzy_matched: bool, corrected_plate: str or None)
+    """
     try:
         vehicles_ref = db.collection("vehicleDetails")
         clean_reg = registration_number.replace(" ", "").upper()
         
+        # Exact match attempt
         query = vehicles_ref.where("registrationNumber", "==", clean_reg)
         docs = list(query.stream())
         
         if docs:
             vehicle_data = docs[0].to_dict()
             vehicle_data["_id"] = docs[0].id
-            return vehicle_data
+            return vehicle_data, False, None
         
         query = vehicles_ref.where("registrationNumber", "==", registration_number)
         docs = list(query.stream())
@@ -52,13 +57,29 @@ async def get_vehicle_by_registration(registration_number: str) -> Optional[dict
         if docs:
             vehicle_data = docs[0].to_dict()
             vehicle_data["_id"] = docs[0].id
-            return vehicle_data
+            return vehicle_data, False, None
         
-        return None
+        # Fuzzy match fallback (only if enabled)
+        if use_fuzzy:
+            match = plate_cache.fuzzy_match(clean_reg)
+            if match:
+                matched_plate, doc_id, match_method = match
+                logger.info(
+                    f"FUZZY MATCH SUCCESS: '{clean_reg}' -> '{matched_plate}' "
+                    f"via {match_method} (doc: {doc_id})"
+                )
+                # Fetch the matched vehicle from Firestore by doc ID
+                doc = db.collection("vehicleDetails").document(doc_id).get()
+                if doc.exists:
+                    vehicle_data = doc.to_dict()
+                    vehicle_data["_id"] = doc.id
+                    return vehicle_data, True, matched_plate
+        
+        return None, False, None
         
     except Exception as e:
         logger.error(f"Error finding vehicle by registration: {e}")
-        return None
+        return None, False, None
 
 
 async def get_active_trip(vehicle_id: str) -> Optional[dict]:
@@ -160,7 +181,9 @@ async def detect_plate_only(
         detection = await detect_plate_from_upload(file)
         
         db_start = time.perf_counter()
-        vehicle = await get_vehicle_by_registration(detection.plate_number)
+        vehicle, fuzzy_matched, corrected_plate = await get_vehicle_by_registration(
+            detection.plate_number, use_fuzzy=True
+        )
         db_time_ms = (time.perf_counter() - db_start) * 1000
         
         total_time_ms = (time.perf_counter() - total_start) * 1000
@@ -170,10 +193,13 @@ async def detect_plate_only(
             f"DETECT-ONLY | YOLO: {detection.yolo_time_ms:.1f}ms | "
             f"OCR: {detection.ocr_time_ms:.1f}ms | DB: {db_time_ms:.1f}ms | "
             f"Total: {total_time_ms:.1f}ms | Plate: {detection.plate_number}"
+            f"{' | FUZZY -> ' + corrected_plate if fuzzy_matched else ''}"
         )
         
         return {
-            "detected_plate": detection.plate_number,
+            "detected_plate": corrected_plate if fuzzy_matched else detection.plate_number,
+            "ocr_raw_text": detection.plate_number if fuzzy_matched else None,
+            "fuzzy_matched": fuzzy_matched,
             "confidence": detection.confidence,
             "is_registered": vehicle is not None,
             "vehicle_info": {
@@ -207,7 +233,9 @@ async def check_in_via_plate(
         plate_number = detection.plate_number
         
         db_start = time.perf_counter()
-        vehicle = await get_vehicle_by_registration(plate_number)
+        vehicle, fuzzy_matched, corrected_plate = await get_vehicle_by_registration(
+            plate_number, use_fuzzy=True
+        )
         db_time_ms = (time.perf_counter() - db_start) * 1000
         
         if not vehicle:
@@ -219,6 +247,10 @@ async def check_in_via_plate(
                     "detected_plate": plate_number
                 }
             )
+        
+        if fuzzy_matched:
+            logger.info(f"CHECK-IN using fuzzy match: OCR='{plate_number}' -> Corrected='{corrected_plate}'")
+            plate_number = corrected_plate
         
         vehicle_id = vehicle["_id"]
         registration_number = vehicle.get("registrationNumber", plate_number)
@@ -292,6 +324,8 @@ async def check_in_via_plate(
         return {
             "message": "Vehicle checked in successfully",
             "detected_plate": plate_number,
+            "ocr_raw_text": detection.plate_number if fuzzy_matched else None,
+            "fuzzy_matched": fuzzy_matched,
             "confidence": detection.confidence,
             "action_result": {
                 "vehicleId": vehicle_id,
@@ -324,7 +358,9 @@ async def release_via_plate(
         plate_number = detection.plate_number
         
         db_start = time.perf_counter()
-        vehicle = await get_vehicle_by_registration(plate_number)
+        vehicle, fuzzy_matched, corrected_plate = await get_vehicle_by_registration(
+            plate_number, use_fuzzy=True
+        )
         db_time_ms = (time.perf_counter() - db_start) * 1000
         
         if not vehicle:
@@ -336,6 +372,10 @@ async def release_via_plate(
                     "detected_plate": plate_number
                 }
             )
+        
+        if fuzzy_matched:
+            logger.info(f"RELEASE using fuzzy match: OCR='{plate_number}' -> Corrected='{corrected_plate}'")
+            plate_number = corrected_plate
         
         vehicle_id = vehicle["_id"]
         
@@ -407,6 +447,8 @@ async def release_via_plate(
         return {
             "message": "Vehicle released for trip",
             "detected_plate": plate_number,
+            "ocr_raw_text": detection.plate_number if fuzzy_matched else None,
+            "fuzzy_matched": fuzzy_matched,
             "confidence": detection.confidence,
             "action_result": {
                 "vehicleId": vehicle_id,
@@ -440,7 +482,9 @@ async def check_out_via_plate(
         plate_number = detection.plate_number
         
         db_start = time.perf_counter()
-        vehicle = await get_vehicle_by_registration(plate_number)
+        vehicle, fuzzy_matched, corrected_plate = await get_vehicle_by_registration(
+            plate_number, use_fuzzy=True
+        )
         db_time_ms = (time.perf_counter() - db_start) * 1000
         
         if not vehicle:
@@ -452,6 +496,10 @@ async def check_out_via_plate(
                     "detected_plate": plate_number
                 }
             )
+        
+        if fuzzy_matched:
+            logger.info(f"CHECK-OUT using fuzzy match: OCR='{plate_number}' -> Corrected='{corrected_plate}'")
+            plate_number = corrected_plate
         
         vehicle_id = vehicle["_id"]
         
@@ -515,6 +563,8 @@ async def check_out_via_plate(
         return {
             "message": "Vehicle checked out successfully",
             "detected_plate": plate_number,
+            "ocr_raw_text": detection.plate_number if fuzzy_matched else None,
+            "fuzzy_matched": fuzzy_matched,
             "confidence": detection.confidence,
             "action_result": {
                 "vehicleId": vehicle_id,

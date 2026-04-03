@@ -15,3 +15,20 @@
 2026-04-01 11:49:44 - INFO - uvicorn.error - Waiting for application shutdown.
 2026-04-01 11:49:44 - INFO - uvicorn.error - Application shutdown complete.
 2026-04-01 11:49:44 - INFO - uvicorn.error - Finished server process [32932]
+2026-04-03 14:46:41 - INFO - app.services.plate_detection - Loading plate detection models...
+2026-04-03 14:46:41 - INFO - app.services.plate_detection - YOLO model loaded from models/license-plate-finetune-v1s.pt
+2026-04-03 14:46:41 - INFO - app.services.plate_detection - OCR configured to use NVIDIA API
+2026-04-03 14:46:41 - INFO - root - STARTUP RAM | Process RSS: 370.2MB | Process VMS: 838.7MB | System Available: 2480MB / 16024MB | System Used: 84.5%
+2026-04-03 14:46:41 - INFO - app.services.plate_cache - VehiclePlateCache initialized (empty, awaiting Firestore sync)
+2026-04-03 14:46:41 - INFO - uvicorn.error - Started server process [32488]
+2026-04-03 14:46:41 - INFO - uvicorn.error - Waiting for application startup.
+2026-04-03 14:46:41 - INFO - main - Starting plate cache Firestore listener...
+2026-04-03 14:46:41 - INFO - app.services.plate_cache - Starting Firestore real-time listener for vehicle plates cache...
+2026-04-03 14:46:41 - INFO - app.services.plate_cache - Firestore real-time listener started for vehicle plates cache
+2026-04-03 14:46:41 - INFO - uvicorn.error - Application startup complete.
+2026-04-03 14:46:42 - INFO - app.services.plate_cache - Plate cache synced: 66 vehicles loaded
+2026-04-03 14:46:53 - INFO - uvicorn.error - Shutting down
+2026-04-03 14:46:53 - INFO - uvicorn.error - Waiting for application shutdown.
+2026-04-03 14:46:53 - INFO - app.services.plate_cache - Firestore listener stopped
+2026-04-03 14:46:53 - INFO - uvicorn.error - Application shutdown complete.
+2026-04-03 14:46:53 - INFO - uvicorn.error - Finished server process [32488]
